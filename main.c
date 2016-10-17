@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/17 12:15:26 by tbouder           #+#    #+#             */
-/*   Updated: 2016/10/17 20:28:25 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/10/17 21:05:12 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,7 +148,7 @@ void		ft_print_list(t_env env)
 	t_list	*list;
 
 	list = env.lst;
-	while (list->next)
+	while (list)
 	{
 		ft_printf("[%s]\n", ((t_file_datas *)list->content)->file_name);
 		list = list->next;
@@ -176,49 +176,30 @@ t_list		*ft_lstmiddle(void const *content, size_t c_size, t_list *next)
 	return (list);
 }
 
-int		ft_strcmp_ls(const char *s1, const char *s2)
-{
-	size_t	i;
-
-	i = 0;
-	while (s1[i] || s2[i])
-	{
-		if (s1[i] != s2[i])
-		{
-			// ft_printf("[{176}%c{0}] != [{42}%c{0}]\n", s1[i], s2[i]);
-			return (((unsigned char *)s1)[i] - ((unsigned char *)s2)[i]);
-		}
-		i++;
-	}
-	return (0);
-}
-
 void		ft_lstinsert_by(t_list **list, void *content, size_t c_size)
 {
 	t_list	*new_list;
-	char	*s1;
-	char	*s2;
-	int		NOOO = 0;
+	char	*content_to_compare;
+	char	*content_to_add;
+	int		been_inserted = 0;
+
+	content_to_add = ((t_file_datas *)content)->file_name;
 
 	new_list = *list;
 	if (new_list)
 	{
 		while (new_list->next)
 		{
-			s1 = ((t_file_datas *)new_list->content)->file_name;
-			s2 = ((t_file_datas *)content)->file_name;
-			// ft_printf("[{176}%s{0}] vs [{42}%s{0}] == [%d]\n", s2, s1, ft_strcmp(s1, s2));
-
-			if (ft_strcmp_ls(s1, s2) > 0)
+			content_to_compare = ((t_file_datas *)new_list->next->content)->file_name;
+			if (strcmp(content_to_compare, content_to_add) > 0)
 			{
-				// ft_printf("[{176}%s{0}] PUSH AVANT [{42}%s{0}]\n", s2, s1);
 				new_list->next = ft_lstmiddle(content, c_size, new_list->next);
-				NOOO = 1;
-				break ;
+				been_inserted = 1;
+				break;
 			}
 			new_list = new_list->next;
 		}
-		if (NOOO == 0)
+		if (been_inserted == 0)
 			new_list->next = ft_lstnew(content, c_size);
 	}
 	else
@@ -243,7 +224,7 @@ void		ft_launcher(t_env env, char *dirname)
 		ft_extract_time(&env);
 		// ft_print_result(env);
 		// ft_lstinsert_by(&env.lst, env.datas, sizeof(env.datas));
-		ft_lstend(&env.lst, env.datas, sizeof(env.datas));
+		ft_lstinsert_by(&env.lst, env.datas, sizeof(env.datas));
 		// ft_print_list(env);
 
 		// ft_printf("----- END LOOP : PUSH {205}%s{0} -----\n", env.datas->file_name);
@@ -251,6 +232,7 @@ void		ft_launcher(t_env env, char *dirname)
 	ft_print_list(env);
 	closedir(env.dir_fd);
 }
+
 int			main(int ac, char **av)
 {
 	t_env	env;
