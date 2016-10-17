@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/26 15:30:10 by tbouder           #+#    #+#             */
-/*   Updated: 2016/10/17 19:14:41 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/10/18 00:31:43 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,9 @@
 
 # include "libft/libft.h"
 
-typedef struct			s_file_datas
+typedef struct			s_file_data
 {
-	char				*file_name;
+	char				*filename;
 	char				type;
 
 	char				usr_r;
@@ -52,15 +52,14 @@ typedef struct			s_file_datas
 	int					size;
 	char				*time;
 	unsigned long		timestamp;
-
-}						t_file_datas;
+}						t_file_data;
 
 typedef struct			s_env
 {
 	char				*directory;
 	DIR					*dir_fd;
 	struct dirent		*dir_content;
-	struct s_file_datas	*datas;
+	struct s_file_data	*data;
 	struct stat			stats;
 
 	t_list				*lst;

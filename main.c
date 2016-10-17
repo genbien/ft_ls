@@ -6,13 +6,13 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/17 12:15:26 by tbouder           #+#    #+#             */
-/*   Updated: 2016/10/17 21:05:12 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/10/18 01:14:29 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-char	*ft_join(char *s1, char *s2)
+char		*ft_join(char *s1, char *s2)
 {
 	char	*str;
 
@@ -25,29 +25,29 @@ char	*ft_join(char *s1, char *s2)
 
 void		ft_extract_type(t_env *env)
 {
-	S_ISDIR(env->stats.st_mode) ? env->datas->type = 'd' : 0;
-	S_ISREG(env->stats.st_mode) ? env->datas->type = '-' : 0;
-	S_ISLNK(env->stats.st_mode) ? env->datas->type = 'l' : 0;
-	S_ISBLK(env->stats.st_mode) ? env->datas->type = 'b' : 0;
-	S_ISCHR(env->stats.st_mode) ? env->datas->type = 'c' : 0;
-	S_ISFIFO(env->stats.st_mode) ? env->datas->type = 'p' : 0;
-	S_ISSOCK(env->stats.st_mode) ? env->datas->type = 's' : 0;
+	S_ISDIR(env->stats.st_mode) ? env->data->type = 'd' : 0;
+	S_ISREG(env->stats.st_mode) ? env->data->type = '-' : 0;
+	S_ISLNK(env->stats.st_mode) ? env->data->type = 'l' : 0;
+	S_ISBLK(env->stats.st_mode) ? env->data->type = 'b' : 0;
+	S_ISCHR(env->stats.st_mode) ? env->data->type = 'c' : 0;
+	S_ISFIFO(env->stats.st_mode) ? env->data->type = 'p' : 0;
+	S_ISSOCK(env->stats.st_mode) ? env->data->type = 's' : 0;
 }
 
 void		ft_extract_perm(t_env *env)
 {
-	env->datas->usr_r = env->stats.st_mode & S_IRUSR ? 'r' : '-';
-	env->datas->usr_w = env->stats.st_mode & S_IWUSR ? 'w' : '-';
-	env->datas->usr_x = env->stats.st_mode & S_IXUSR ? 'x' : '-';
+	env->data->usr_r = env->stats.st_mode & S_IRUSR ? 'r' : '-';
+	env->data->usr_w = env->stats.st_mode & S_IWUSR ? 'w' : '-';
+	env->data->usr_x = env->stats.st_mode & S_IXUSR ? 'x' : '-';
 
-	env->datas->grp_r = env->stats.st_mode & S_IRGRP ? 'r' : '-';
-	env->datas->grp_w = env->stats.st_mode & S_IWGRP ? 'w' : '-';
-	env->datas->grp_x = env->stats.st_mode & S_IXGRP ? 'x' : '-';
+	env->data->grp_r = env->stats.st_mode & S_IRGRP ? 'r' : '-';
+	env->data->grp_w = env->stats.st_mode & S_IWGRP ? 'w' : '-';
+	env->data->grp_x = env->stats.st_mode & S_IXGRP ? 'x' : '-';
 
-	env->datas->oth_r = env->stats.st_mode & S_IROTH ? 'r' : '-';
-	env->datas->oth_w = env->stats.st_mode & S_IWOTH ? 'w' : '-';
-	env->datas->oth_x = env->stats.st_mode & S_IXOTH ? 'x' : '-';
-	env->stats.st_mode & S_ISVTX ? env->datas->oth_x = 't' : 0;
+	env->data->oth_r = env->stats.st_mode & S_IROTH ? 'r' : '-';
+	env->data->oth_w = env->stats.st_mode & S_IWOTH ? 'w' : '-';
+	env->data->oth_x = env->stats.st_mode & S_IXOTH ? 'x' : '-';
+	env->stats.st_mode & S_ISVTX ? env->data->oth_x = 't' : 0;
 }
 
 void		ft_extract_attributs(t_env *env)
@@ -59,31 +59,31 @@ void		ft_extract_attributs(t_env *env)
 	acl = acl_get_link_np(env->directory, ACL_TYPE_EXTENDED);
 
 	if (xattr > 0)
-		env->datas->attrib = '@';
+		env->data->attrib = '@';
 	else if (acl != NULL)
-		env->datas->attrib = '+';
+		env->data->attrib = '+';
 	else
-		env->datas->attrib = ' ';
+		env->data->attrib = ' ';
 }
 
 void		ft_extract_hard_links(t_env *env)
 {
-	env->datas->hard_link = env->stats.st_nlink;
+	env->data->hard_link = env->stats.st_nlink;
 }
 
 void		ft_extract_owner(t_env *env)
 {
-	env->datas->owner = ft_strinit(getpwuid(env->stats.st_uid)->pw_name);
+	env->data->owner = ft_strinit(getpwuid(env->stats.st_uid)->pw_name);
 }
 
 void		ft_extract_group(t_env *env)
 {
-	env->datas->group = ft_strinit(getgrgid(env->stats.st_gid)->gr_name);
+	env->data->group = ft_strinit(getgrgid(env->stats.st_gid)->gr_name);
 }
 
 void		ft_extract_size(t_env *env)
 {
-	env->datas->size = env->stats.st_size;
+	env->data->size = env->stats.st_size;
 }
 
 void		ft_extract_time(t_env *env)
@@ -96,7 +96,7 @@ void		ft_extract_time(t_env *env)
 	i = 0;
 	y = 0;
 	date = ctime(&env->stats.st_mtime);
-	env->datas->timestamp = ft_atoi(date);
+	env->data->timestamp = ft_atoi(date);
 	date_new = ft_strnew(ft_strlen(date));
 	while (date[i++] != ' ')
 		;
@@ -111,32 +111,32 @@ void		ft_extract_time(t_env *env)
 		date_new[y++] = date[i++];
 	while (date[i] != ':')
 		date_new[y++] = date[i++];
-	env->datas->time = ft_strinit(date_new);
+	env->data->time = ft_strinit(date_new);
 }
 
 void		ft_print_result(t_env env)
 {
 	// %11s => MAX SIZE + 1
 	ft_printf("%c%c%c%c%c%c%c%c%c%c%c",
-	env.datas->type,
-	env.datas->usr_r, env.datas->usr_w, env.datas->usr_x,
-	env.datas->grp_r, env.datas->grp_w, env.datas->grp_x,
-	env.datas->oth_r, env.datas->oth_w, env.datas->oth_x,
-	env.datas->attrib);
+	env.data->type,
+	env.data->usr_r, env.data->usr_w, env.data->usr_x,
+	env.data->grp_r, env.data->grp_w, env.data->grp_x,
+	env.data->oth_r, env.data->oth_w, env.data->oth_x,
+	env.data->attrib);
 
 	ft_printf("%4d %s %11s %6d %s ",
-	env.datas->hard_link,
-	env.datas->owner,
-	env.datas->group,
-	env.datas->size,
-	env.datas->time);
+	env.data->hard_link,
+	env.data->owner,
+	env.data->group,
+	env.data->size,
+	env.data->time);
 
-	if (env.datas->type == 'd')
+	if (env.data->type == 'd')
 		ft_printf("{117}%s{0}\n", env.dir_content->d_name);
-	else if (env.datas->type == 'l')
+	else if (env.data->type == 'l')
 		ft_printf("{213}%s{0}\n", env.dir_content->d_name);
-	else if (env.datas->type == '-' && (env.datas->usr_x == 'x' ||
-		env.datas->grp_x == 'x'|| env.datas->oth_x == 'x'))
+	else if (env.data->type == '-' && (env.data->usr_x == 'x' ||
+		env.data->grp_x == 'x'|| env.data->oth_x == 'x'))
 		ft_printf("{197}%s{0}\n", env.dir_content->d_name);
 	else
 		ft_printf("%s\n", env.dir_content->d_name);
@@ -145,57 +145,75 @@ void		ft_print_result(t_env env)
 
 void		ft_print_list(t_env env)
 {
-	t_list	*list;
+	t_list			*list;
+	t_file_data		*data;
 
 	list = env.lst;
 	while (list)
 	{
-		ft_printf("[%s]\n", ((t_file_datas *)list->content)->file_name);
+		data = ((t_file_data *)list->content);
+		ft_printf("%c%c%c%c%c%c%c%c%c%c%c",
+		data->type,
+		data->usr_r, data->usr_w, data->usr_x,
+		data->grp_r, data->grp_w, data->grp_x,
+		data->oth_r, data->oth_w, data->oth_x,
+		data->attrib);
+
+		ft_printf("%4d %s %11s %6d %s ",
+		data->hard_link,
+		data->owner,
+		data->group,
+		data->size,
+		data->time);
+
+		if (data->type == 'd')
+			ft_printf("{117}%s{0}\n", data->filename);
+		else if (data->type == 'l')
+			ft_printf("{213}%s{0}\n", data->filename);
+		else if (data->type == '-' && (data->usr_x == 'x' ||
+			data->grp_x == 'x'|| data->oth_x == 'x'))
+			ft_printf("{197}%s{0}\n", data->filename);
+		else
+			ft_printf("%s\n", data->filename);
 		list = list->next;
 	}
 }
 
-t_list		*ft_lstmiddle(void const *content, size_t c_size, t_list *next)
+/******************************************************************************/
+
+/*TO ADD LIBFT*/
+t_list		*ft_lstinsert(void const *content, size_t c_size, t_list *next)
 {
 	t_list	*list;
 
 	if (!(list = (t_list *)malloc(sizeof(t_list))))
 		return (NULL);
-	if (content == NULL)
-	{
-		list->content = NULL;
-		list->content_size = 0;
-	}
-	else
-	{
-		list->content = (void*)malloc(sizeof(c_size));
-		ft_memmove(list->content, (void *)content, c_size);
-		list->content_size = c_size;
-	}
+
+	list->content = (void*)malloc(c_size);
+	ft_memmove(list->content, (void *)content, c_size);
+	list->content_size = c_size;
 	list->next = next;
 	return (list);
 }
+/*!TO ADD LIBFT*/
 
 void		ft_lstinsert_by(t_list **list, void *content, size_t c_size)
 {
 	t_list	*new_list;
-	char	*content_to_compare;
-	char	*content_to_add;
-	int		been_inserted = 0;
+	int		been_inserted;
 
-	content_to_add = ((t_file_datas *)content)->file_name;
-
+	been_inserted = 0;
 	new_list = *list;
 	if (new_list)
 	{
 		while (new_list->next)
 		{
-			content_to_compare = ((t_file_datas *)new_list->next->content)->file_name;
-			if (strcmp(content_to_compare, content_to_add) > 0)
+			if (strcmp(((t_file_data *)new_list->next->content)->filename,
+				((t_file_data *)content)->filename) > 0)
 			{
-				new_list->next = ft_lstmiddle(content, c_size, new_list->next);
+				new_list->next = ft_lstinsert(content, c_size, new_list->next);
 				been_inserted = 1;
-				break;
+				break ;
 			}
 			new_list = new_list->next;
 		}
@@ -212,8 +230,7 @@ void		ft_launcher(t_env env, char *dirname)
 	{
 		env.directory = ft_join(dirname, env.dir_content->d_name);
 		lstat(env.directory, &(env.stats));
-		env.datas->file_name = ft_strinit(env.dir_content->d_name);
-
+		env.data->filename = ft_strinit(env.dir_content->d_name);
 		ft_extract_type(&env);
 		ft_extract_perm(&env);
 		ft_extract_attributs(&env);
@@ -222,12 +239,8 @@ void		ft_launcher(t_env env, char *dirname)
 		ft_extract_group(&env);
 		ft_extract_size(&env);
 		ft_extract_time(&env);
-		// ft_print_result(env);
-		// ft_lstinsert_by(&env.lst, env.datas, sizeof(env.datas));
-		ft_lstinsert_by(&env.lst, env.datas, sizeof(env.datas));
-		// ft_print_list(env);
 
-		// ft_printf("----- END LOOP : PUSH {205}%s{0} -----\n", env.datas->file_name);
+		ft_lstinsert_by(&env.lst, env.data, sizeof(t_file_data));
 	}
 	ft_print_list(env);
 	closedir(env.dir_fd);
@@ -238,7 +251,7 @@ int			main(int ac, char **av)
 	t_env	env;
 	int		i;
 
-	(!(env.datas = (t_file_datas *)malloc(sizeof(t_file_datas)))) ? exit(1) : 0;
+	(!(env.data = (t_file_data *)malloc(sizeof(t_file_data)))) ? exit(1) : 0;
 	(!(env.lst = (t_list *)malloc(sizeof(t_list)))) ? exit(1) : 0;
 	env.lst = NULL;
 
