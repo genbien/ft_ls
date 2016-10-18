@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/17 12:15:26 by tbouder           #+#    #+#             */
-/*   Updated: 2016/10/18 01:14:29 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/10/18 12:21:59 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,16 @@ char		*ft_join(char *s1, char *s2)
 	ft_strcat(str, "/");
 	ft_strcat(str, s2);
 	return (str);
+}
+
+void		ft_extract_filename(t_env *env)
+{
+	int		filelen;
+
+	env->data->filename = ft_strinit(env->dir_content->d_name);
+	filelen = ft_strlen(env->data->filename);
+	if (filelen > env->max_filename_len)
+		env->max_filename_len = filelen;
 }
 
 void		ft_extract_type(t_env *env)
@@ -73,12 +83,22 @@ void		ft_extract_hard_links(t_env *env)
 
 void		ft_extract_owner(t_env *env)
 {
+	int		ownerlen;
+
 	env->data->owner = ft_strinit(getpwuid(env->stats.st_uid)->pw_name);
+	ownerlen = ft_strlen(env->data->owner);
+	if (ownerlen > env->max_owner_len)
+		env->max_owner_len = ownerlen;
 }
 
 void		ft_extract_group(t_env *env)
 {
+	int		grouplen;
+
 	env->data->group = ft_strinit(getgrgid(env->stats.st_gid)->gr_name);
+	grouplen = ft_strlen(env->data->group);
+	if (grouplen > env->max_group_len)
+		env->max_group_len = grouplen;
 }
 
 void		ft_extract_size(t_env *env)
@@ -114,35 +134,6 @@ void		ft_extract_time(t_env *env)
 	env->data->time = ft_strinit(date_new);
 }
 
-void		ft_print_result(t_env env)
-{
-	// %11s => MAX SIZE + 1
-	ft_printf("%c%c%c%c%c%c%c%c%c%c%c",
-	env.data->type,
-	env.data->usr_r, env.data->usr_w, env.data->usr_x,
-	env.data->grp_r, env.data->grp_w, env.data->grp_x,
-	env.data->oth_r, env.data->oth_w, env.data->oth_x,
-	env.data->attrib);
-
-	ft_printf("%4d %s %11s %6d %s ",
-	env.data->hard_link,
-	env.data->owner,
-	env.data->group,
-	env.data->size,
-	env.data->time);
-
-	if (env.data->type == 'd')
-		ft_printf("{117}%s{0}\n", env.dir_content->d_name);
-	else if (env.data->type == 'l')
-		ft_printf("{213}%s{0}\n", env.dir_content->d_name);
-	else if (env.data->type == '-' && (env.data->usr_x == 'x' ||
-		env.data->grp_x == 'x'|| env.data->oth_x == 'x'))
-		ft_printf("{197}%s{0}\n", env.dir_content->d_name);
-	else
-		ft_printf("%s\n", env.dir_content->d_name);
-}
-
-
 void		ft_print_list(t_env env)
 {
 	t_list			*list;
@@ -152,19 +143,23 @@ void		ft_print_list(t_env env)
 	while (list)
 	{
 		data = ((t_file_data *)list->content);
-		ft_printf("%c%c%c%c%c%c%c%c%c%c%c",
+		ft_printf("%c%c%c%c%c%c%c%c%c%c %c",
 		data->type,
 		data->usr_r, data->usr_w, data->usr_x,
 		data->grp_r, data->grp_w, data->grp_x,
 		data->oth_r, data->oth_w, data->oth_x,
 		data->attrib);
 
-		ft_printf("%4d %s %11s %6d %s ",
+		ft_printf("%4d %-*s %-*s %d %s",
 		data->hard_link,
+
+		env.max_owner_len + 1,
 		data->owner,
+
+		env.max_group_len + 1,
 		data->group,
-		data->size,
-		data->time);
+
+		data->size, data->time);
 
 		if (data->type == 'd')
 			ft_printf("{117}%s{0}\n", data->filename);
@@ -230,7 +225,8 @@ void		ft_launcher(t_env env, char *dirname)
 	{
 		env.directory = ft_join(dirname, env.dir_content->d_name);
 		lstat(env.directory, &(env.stats));
-		env.data->filename = ft_strinit(env.dir_content->d_name);
+
+		ft_extract_filename(&env);
 		ft_extract_type(&env);
 		ft_extract_perm(&env);
 		ft_extract_attributs(&env);
@@ -242,6 +238,9 @@ void		ft_launcher(t_env env, char *dirname)
 
 		ft_lstinsert_by(&env.lst, env.data, sizeof(t_file_data));
 	}
+	ft_printf("MAX FILENAME : [%d]\n", env.max_filename_len);
+	ft_printf("MAX OWNER : [%d]\n", env.max_owner_len);
+	ft_printf("MAX GROUP : [%d]\n", env.max_group_len);
 	ft_print_list(env);
 	closedir(env.dir_fd);
 }
@@ -254,6 +253,9 @@ int			main(int ac, char **av)
 	(!(env.data = (t_file_data *)malloc(sizeof(t_file_data)))) ? exit(1) : 0;
 	(!(env.lst = (t_list *)malloc(sizeof(t_list)))) ? exit(1) : 0;
 	env.lst = NULL;
+	env.max_filename_len = 0;
+	env.max_owner_len = 0;
+	env.max_group_len = 0;
 
 	if (ac == 1)
 	{

@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/26 15:30:10 by tbouder           #+#    #+#             */
-/*   Updated: 2016/10/18 00:31:43 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/10/18 11:22:26 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,8 +61,11 @@ typedef struct			s_env
 	struct dirent		*dir_content;
 	struct s_file_data	*data;
 	struct stat			stats;
-
 	t_list				*lst;
+
+	int					max_filename_len;
+	int					max_owner_len;
+	int					max_group_len;
 }						t_env;
 
 #endif
