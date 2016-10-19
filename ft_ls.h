@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/26 15:30:10 by tbouder           #+#    #+#             */
-/*   Updated: 2016/10/18 18:24:30 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/10/19 19:52:04 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@
 
 # include <sys/xattr.h>
 # include <sys/acl.h> //BONUS
+# include <sys/ioctl.h> //BONUS affichage colones
+# include <termios.h> //BONUS affichage colones
 
 # include "libft/libft.h"
 
@@ -99,6 +101,14 @@ void					ft_extract_blocks(t_env *env);
 char					*ft_join(char *s1, char *s2, char *divider);
 int						ft_is_symb_link(t_env env, char *dirname);
 int						ft_is_dir(t_env env, char *dirname);
+
+/*
+** SIMPLE
+*/
+int						ft_get_current_line();
+void					ft_scroll_down(int row, int pos, int elem_line);
+void					ft_align_cursor(int elem_line, int nb_file);
+void					ft_ls_short(t_env env, t_list *list);
 
 
 #endif

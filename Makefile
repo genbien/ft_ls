@@ -6,7 +6,7 @@
 #    By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/04/22 12:12:36 by tbouder           #+#    #+#              #
-#    Updated: 2016/10/18 16:37:30 by tbouder          ###   ########.fr        #
+#    Updated: 2016/10/19 19:38:49 by tbouder          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ CC			= 	gcc
 CFLAGS		= 	-Wall -Werror -Wextra -g
 OPTI		=	-g -O3 -O2
 
-SRC			=	main.c ft_extract_part_one.c ft_extract_part_two.c ft_tools.c
+SRC			=	main.c ft_extract_part_one.c ft_extract_part_two.c ft_tools.c ft_ls_short.c
 HEAD		=	libft/libft.h
 
 # LIB			=	-Lft_printf -lftprintf

@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/17 12:15:26 by tbouder           #+#    #+#             */
-/*   Updated: 2016/10/19 02:37:26 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/10/19 19:52:09 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,14 +31,14 @@ t_list	*ft_ext_data(t_list *o_list, int nb)
 		return (NULL);
 }
 
-#include <sys/ioctl.h>
+
 void		ft_print_list(t_env env)
 {
 	t_list			*list;
 	t_file_data		*data;
-	// int				i;
 
 	list = env.lst;
+	data = NULL;
 	if (env.flag_l)
 	{
 		ft_printf("total %d\n", env.blocks);
@@ -72,130 +72,7 @@ void		ft_print_list(t_env env)
 		}
 	}
 	else
-	{
-		// t_list *test;
-		// i = 0;
-		// while (list)
-		// {
-		// 	data = ((t_file_data *)list->content);
-		//
-		// 	ft_printf("%-*s ",env.max_filename_len, data->filename);
-		//
-		// 	test = ft_ext_data(list, env.nb_file / 4);
-		// 	if (test)
-		// 		ft_printf("%-*s ", env.max_filename_len, ((t_file_data *)test->content)->filename);
-		//
-		// 	test = ft_ext_data(list, env.nb_file / 2);
-		// 	if (test)
-		// 		ft_printf("%-*s ", env.max_filename_len, ((t_file_data *)test->content)->filename);
-		//
-		// 	test = ft_ext_data(list, env.nb_file - env.nb_file / 4);
-		// 	if (test)
-		// 		ft_printf("%-*s\n", env.max_filename_len, ((t_file_data *)test->content)->filename);
-		//
-		// 	// i++;
-		// 	list = ft_ext_data(list, 1);
-		// 	i += 4;
-		// 	if (i >= env.nb_file)
-		// 		break ;
-		// }
-
-		// while (list)
-		// {
-			// data = ((t_file_data *)list->content);
-			//
-			// ft_printf("%-*s ",env.max_filename_len, data->filename);
-			//
-			// // i++;
-			// list = ft_ext_data(list, 1);
-			// i += 4;
-			// if (i >= env.nb_file)
-			// 	break ;
-
-			// data = ((t_file_data *)list->content);
-			// ft_printf("%-*s",env.max_filename_len, data->filename);
-			// list = list->next;
-			//
-			// data = ((t_file_data *)list->content);
-			// ft_printf("%-*s",env.max_filename_len, data->filename);
-			// list = list->next;
-			//
-			// data = ((t_file_data *)list->content);
-			// ft_printf("%-*s",env.max_filename_len, data->filename);
-			// list = list->next;
-			//
-			// data = ((t_file_data *)list->content);
-			// ft_printf("%-*s",env.max_filename_len, data->filename);
-			// list = list->next;
-		// }
-
-			struct winsize	w;
-			ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-
-			// w.ws_row
-
-			int		i = 0;
-			int		len = -1;
-			// int		top = 0;
-			int		nb_column = w.ws_col / env.max_filename_len;
-			int		nb_line = env.nb_file / nb_column + ((env.nb_file % nb_column) ? 1 : 0);
-
-			// ft_printf("[%d]\n", w.ws_col / 2);
-			// ft_printf("[%d]\n", nb_column);
-			// ft_printf("[%d]\n", nb_line);
-
-			ft_printf("\033[s");
-			while (i < env.nb_file)
-			{
-				data = ((t_file_data *)list->content);
-				ft_printf("\033[G\033[%dC%s\033[B", len, data->filename);
-				list = list->next;
-				i++;
-				if (i % nb_line == 0 && i != env.nb_file)
-				{
-					// ft_printf("[%d] [%d]\n", i, nb_line);
-					ft_printf("\033[u");
-					len += env.nb_file;
-				}
-			}
-			// ft_printf("\033[G");
-
-
-
-			// while (list)
-			// {
-			// 	data = ((t_file_data *)list->content);
-			//
-			// 	len += ft_strlen(data->filename);
-			//
-			// 	ft_printf("\033[%dB\033[%dD%s", 0, len, data->filename);
-			//
-			// 	i++;
-			// 	if (i == nb_line)
-			// 	{
-			// 		ft_printf("\n--------");
-			// 		round = 5;
-			// 		len = -len;
-			// 	}
-			// 	list = list->next;
-			// }
-
-			// exit(1);
-
-// printf("\033[XA"); // Move up X lines;
-// printf("\033[XB"); // Move down X lines;
-// printf("\033[XC"); // Move right X column;
-// printf("\033[XD"); // Move left X column;
-// printf("\033[2J"); // Clear screen
-
-			// ft_printf("\033[7C[coucou]\n");
-			//
-			// ft_printf("00000000000000000000000000000000000000000000000000000000000000000000001");
-			// exit(1);
-			// list = list->next;
-		// ft_printf("\n");
-
-	}
+		ft_ls_short(env, list);
 }
 
 /******************************************************************************/
@@ -318,7 +195,7 @@ void		ft_verif_args(t_env env, char *directory)
 		ft_done(env);
 	}
 	else
-		ft_printf("ls: %s: No such file or directory\n", directory);
+		ft_printf("ft_ls: %s: No such file or directory\n", directory);
 }
 
 int			ft_extract_flg(char **av, t_env *env)
