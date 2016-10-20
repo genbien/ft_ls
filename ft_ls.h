@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/26 15:30:10 by tbouder           #+#    #+#             */
-/*   Updated: 2016/10/20 11:20:39 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/10/20 15:51:41 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,9 @@
 # include <termios.h> //BONUS affichage colones
 
 # include "libft/libft.h"
+
+# define FLAGS env->flags
+
 
 typedef struct			s_file_data
 {
@@ -59,6 +62,17 @@ typedef struct			s_file_data
 	long				timestamp;
 }						t_file_data;
 
+typedef struct			s_ls_flag
+{
+	int					l;
+	int					rec;
+	int					a;
+	int					r;
+	int					t;
+	int					one;
+	int					two; //HIDDEN ONLY
+}						t_ls_flag;
+
 typedef struct			s_env
 {
 	int					args;
@@ -67,7 +81,13 @@ typedef struct			s_env
 	struct dirent		*dir_content;
 	struct s_file_data	*data;
 	struct stat			stats;
+
 	t_list				*lst;
+	t_list				*lst_dir;
+	t_list				*lst_file;
+	t_list				*lst_none;
+
+	t_ls_flag			flags;
 
 	int					max_filename_len;
 	int					max_owner_len;
@@ -76,12 +96,6 @@ typedef struct			s_env
 	int					max_size_len;
 	int					blocks;
 	int					nb_file;
-
-	int					flag_l;
-	int					flag_rec;
-	int					flag_a;
-	int					flag_r;
-	int					flag_t;
 }						t_env;
 
 void					ft_extract_filename(t_env *env, char *dirname);
@@ -101,14 +115,24 @@ void					ft_extract_blocks(t_env *env);
 char					*ft_join(char *s1, char *s2, char *divider);
 int						ft_is_symb_link(t_env env, char *dirname);
 int						ft_is_dir(t_env env, char *dirname);
+void					ft_print_color(t_file_data *data);
+t_list					*ft_lstinsert(void const *content, size_t c_size, t_list *next);
 
 /*
 ** SIMPLE
 */
-// int						ft_get_current_line();
-// void					ft_scroll_down(int row, int pos, int elem_line);
-// void					ft_align_cursor(int elem_line, int nb_file);
 void					ft_ls_short(t_env env, t_list *list);
+void					ft_ls_one(t_list *list);
 
+/*
+** ARGS
+*/
+int						ft_extract_flags(char **av, t_env *env);
+void					ft_sort_args(t_env *env, char **av, int ac);
+
+/*
+** INIT
+*/
+void					ft_init_env(t_env *env);
 
 #endif

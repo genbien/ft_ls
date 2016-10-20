@@ -6,31 +6,11 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/17 12:15:26 by tbouder           #+#    #+#             */
-/*   Updated: 2016/10/19 19:52:09 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/10/20 15:58:36 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
-
-t_list	*ft_ext_data(t_list *o_list, int nb)
-{
-	t_list		*list;
-	int			i;
-
-	list = o_list;
-	i = 0;
-	while (list && i < nb)
-	{
-		// ft_printf("[%s]\n", ((t_file_data *)list->content)->filename);
-		list = list->next;
-		i++;
-	}
-	if (list)
-		return (list);
-	else
-		return (NULL);
-}
-
 
 void		ft_print_list(t_env env)
 {
@@ -39,7 +19,7 @@ void		ft_print_list(t_env env)
 
 	list = env.lst;
 	data = NULL;
-	if (env.flag_l)
+	if (env.flags.l)
 	{
 		ft_printf("total %d\n", env.blocks);
 		while (list)
@@ -59,20 +39,15 @@ void		ft_print_list(t_env env)
 			env.max_size_len, data->size,
 			data->time_day, data->time_hour);
 
-			if (data->type == 'd')
-				ft_printf("{117}%s{0}\n", data->filename);
-			else if (data->type == 'l')
-				ft_printf("{213}%s{0} -> %s\n", data->filename, data->link);
-			else if (data->type == '-' && (data->usr_x == 'x' ||
-				data->grp_x == 'x'|| data->oth_x == 'x'))
-				ft_printf("{197}%s{0}\n", data->filename);
-			else
-				ft_printf("%s\n", data->filename);
+			ft_print_color(data);
+			ft_printf("\n");
 			list = list->next;
 		}
 	}
+	// else if (env.flags.one)
 	else
-		ft_ls_short(env, list);
+		ft_ls_one(list);
+		// ft_ls_short(env, list);
 }
 
 /******************************************************************************/
@@ -100,7 +75,9 @@ void		ft_lstinsert_by(t_list **list, void *content, size_t c_size)
 
 	been_inserted = 0;
 	new_list = *list;
-	if (new_list)
+	if (new_list && strcmp(((t_file_data *)new_list->content)->filename, ((t_file_data *)content)->filename) > 0)
+		*list = ft_lstinsert(content, c_size, new_list);
+	else if (new_list)
 	{
 		while (new_list->next)
 		{
@@ -122,132 +99,94 @@ void		ft_lstinsert_by(t_list **list, void *content, size_t c_size)
 
 /******************************************************************************/
 
-void		ft_done(t_env env)
-{
-	ft_print_list(env);
-}
-
 void		ft_extract_data(t_env *env, char *dirname, int is_away)
 {
-	env->directory = ft_strinit(dirname);
-	lstat(env->directory, &(env->stats));
-	if (env->flag_l)
-	{
-		ft_extract_filename(env, is_away ? dirname : NULL);
-		ft_extract_type(env);
-		ft_extract_perm(env);
-		ft_extract_attributs(env);
-		ft_extract_hard_links(env);
-		ft_extract_owner(env);
-		ft_extract_group(env);
-		ft_extract_size(env);
-		ft_extract_time(env);
-		ft_extract_blocks(env);
-	}
-	else
-	{
-		ft_extract_filename(env, is_away ? dirname : NULL);
-		ft_extract_type(env);
-		ft_extract_perm(env);
-	}
+	ft_extract_filename(env, is_away ? dirname : NULL);
+
+	if (FLAGS.two && env->data->filename[0] != '.')
+		return ;
+	if (!FLAGS.two && !FLAGS.a && env->data->filename[0] == '.')
+		return ;
+
+	ft_extract_type(env);
+	ft_extract_perm(env);
+	FLAGS.l ? ft_extract_attributs(env) : 0;
+	FLAGS.l ? ft_extract_hard_links(env) : 0;
+	FLAGS.l ? ft_extract_owner(env) : 0;
+	FLAGS.l ? ft_extract_group(env) : 0;
+	FLAGS.l ? ft_extract_size(env) : 0;
+	FLAGS.l ? ft_extract_time(env) : 0;
+	FLAGS.l ? ft_extract_blocks(env) : 0;
+
 	env->nb_file++;
 	ft_lstinsert_by(&env->lst, env->data, sizeof(t_file_data));
 }
 
-void		ft_launcher(t_env env, char *dirname)
+void		ft_extract_launcher(t_env *env, char *dirname, int is_away)
 {
-	while ((env.dir_content = readdir(env.dir_fd)) != NULL)
-		ft_extract_data(&env, ft_join(dirname, env.dir_content->d_name, "/"), 0);
-
-	if (env.lst)
-	{
-		if (env.args >= 2)
-			ft_printf("\n%s:\n", dirname);
-		ft_done(env);
-	}
+	env->directory = ft_strinit(dirname);
+	lstat(env->directory, &(env->stats));
+	ft_extract_data(env, dirname, is_away);
 }
 
-void		ft_init_env(t_env *env)
-{
-	(!(env->data = (t_file_data *)malloc(sizeof(t_file_data)))) ? exit(1) : 0;
-	(!(env->lst = (t_list *)malloc(sizeof(t_list)))) ? exit(1) : 0;
-	env->lst = NULL;
-	env->max_filename_len = 0;
-	env->max_owner_len = 0;
-	env->max_group_len = 0;
-	env->max_link_len = 0;
-	env->max_size_len = 0;
-	env->blocks = 0;
-	env->nb_file = 0;
-}
 
-void		ft_verif_args(t_env env, char *directory)
+void		ft_launcher(t_env env, char *directory)
 {
-	env.dir_fd = opendir(directory);
-	if (env.dir_fd > 0 && ft_is_symb_link(env, directory) == 0)
-	{
-		ft_launcher(env, directory);
-		closedir(env.dir_fd);
-	}
-	else if (env.dir_fd == 0 && lstat(directory, &(env.stats)) != -1)
-	{
-		ft_extract_data(&env, directory, 1);
-		ft_done(env);
-	}
-	else
+	if (lstat(directory, &(env.stats)) == -1)
 		ft_printf("ft_ls: %s: No such file or directory\n", directory);
-}
-
-int			ft_extract_flg(char **av, t_env *env)
-{
-	int		i;
-	int		j;
-	int		k;
-
-	i = 1;
-	k = 0;
-	while (av[i] && av[i][0] == '-' && ft_isalpha(av[i][1]))
+	else
 	{
-		j = 1;
-		while (av[i][j] != '\0' && ft_isalpha(av[i][j]))
+		if (S_ISDIR(env.stats.st_mode) || S_ISLNK(env.stats.st_mode))
 		{
-			av[i][j] == 'l' ? env->flag_l = 1 : 0;
-			av[i][j] == 'R' ? env->flag_rec = 1 : 0;
-			av[i][j] == 'a' ? env->flag_a = 1 : 0;
-			av[i][j] == 'r' ? env->flag_r = 1 : 0;
-			av[i][j] == 't' ? env->flag_t = 1 : 0;
-			j++;
+			env.dir_fd = opendir(directory);
+			while ((env.dir_content = readdir(env.dir_fd)) != NULL)
+				ft_extract_launcher(&env, ft_join(directory,
+					env.dir_content->d_name, "/"), 0);
+			(env.args >= 2) ? ft_printf("%s:\n", directory) : 0;
+			ft_print_list(env);
+			closedir(env.dir_fd);
 		}
-		k++;
-		i++;
+		else
+		{
+			ft_extract_launcher(&env, directory, 1);
+			ft_print_list(env);
+		}
 	}
-	return (k);
 }
+
 
 int			main(int ac, char **av)
 {
 	t_env	env;
 	int		i;
-	int		y;
 
 	ft_init_env(&env);
-	i = ft_extract_flg(av, &env) + 1;
+	i = ft_extract_flags(av, &env);
 	env.args = ac - i;
 
-	if (ac - i == 0)
+	if (i == ac)
 	{
 		if ((env.dir_fd = opendir(".")))
 			ft_launcher(env, ".");
 	}
-	else if (ac - i == 1)
-		ft_verif_args(env, av[ac - i]);
-	else if (ac - 1 > 1)
+	else if (ac - 1 >= 1)
 	{
-		y = i;
-		while (av[y])
+		ft_sort_args(&env, av, i);
+		while (env.lst_none)
 		{
-			ft_verif_args(env, av[y]);
-			y++;
+			ft_launcher(env, env.lst_none->content);
+			env.lst_none = env.lst_none->next;
+		}
+		while (env.lst_file)
+		{
+			ft_launcher(env, env.lst_file->content);
+			env.lst_file = env.lst_file->next;
+		}
+		while (env.lst_dir)
+		{
+			ft_launcher(env, env.lst_dir->content);
+			env.lst_dir = env.lst_dir->next;
+			env.lst_dir ? ft_printf("\n") : 0;
 		}
 	}
 	return (0);
