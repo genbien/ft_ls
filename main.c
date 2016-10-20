@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/17 12:15:26 by tbouder           #+#    #+#             */
-/*   Updated: 2016/10/20 15:58:36 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/10/20 15:59:45 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,10 +44,10 @@ void		ft_print_list(t_env env)
 			list = list->next;
 		}
 	}
-	// else if (env.flags.one)
-	else
+	else if (env.flags.one)
 		ft_ls_one(list);
-		// ft_ls_short(env, list);
+	else
+		ft_ls_short(env, list);
 }
 
 /******************************************************************************/

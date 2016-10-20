@@ -6,26 +6,47 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/19 19:35:33 by tbouder           #+#    #+#             */
-/*   Updated: 2016/10/20 14:34:50 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/10/20 17:06:58 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
+int			ft_read_buffer(void)
+{
+	unsigned char   buffer[4];
+
+	if (read(STDIN_FILENO, buffer, 1) > (ssize_t)0)
+		return buffer[0];
+	return (0);
+}
+
 int			ft_get_current_line(void)
 {
-	char			*buffer;
-	struct termios	term;
-	struct termios	initial_term;
+	int				rows;
+	int				result;
+	struct termios	saved;
+	struct termios	temporary;
 
-	buffer = ft_strnew(8);
-	tcgetattr(STDIN_FILENO, &initial_term);
-	cfmakeraw(&term);
-	tcsetattr(STDIN_FILENO, TCSANOW, &term);
-	write(0, "\033[6n", 4);
-	read(STDIN_FILENO, buffer, sizeof(buffer));
-	tcsetattr(STDIN_FILENO, TCSANOW, &initial_term);
-	return (ft_atoi(&buffer[2]));
+	rows = 0;
+	tcgetattr(STDIN_FILENO, &saved);
+	tcgetattr(STDIN_FILENO, &temporary);
+    temporary.c_lflag &= ~(ICANON | ECHO | CREAD);
+	tcsetattr(STDIN_FILENO, TCSANOW, &temporary);
+	write(STDIN_FILENO, "\033[6n", 4);
+	ft_read_buffer();
+	ft_read_buffer();
+	result = ft_read_buffer();
+	while (result >= '0' && result <= '9')
+	{
+		rows = 10 * rows + result - '0';
+		result = ft_read_buffer();
+	}
+	result = ft_read_buffer();
+	while (result >= '0' && result <= '9')
+		result = ft_read_buffer();
+	tcsetattr(STDIN_FILENO, TCSANOW, &saved);
+	return (rows);
 }
 
 void		ft_scroll_down(int row, int pos, int elem_line)
@@ -77,12 +98,15 @@ void		ft_display_short(t_env env, t_list *list, int elem_line)
 	int			len;
 
 	i = 0;
-	len = -1;
+	len = 0;
 	while (i < env.nb_file)
 	{
 		data = ((t_file_data *)list->content);
 
-		ft_printf("\033[500000D\033[%dC", len);
+		if (len == 0)
+			ft_printf("\033[500000D");
+		else
+			ft_printf("\033[500000D\033[%dC", len);
 		ft_print_color(data);
 		ft_printf("\n");
 		list = list->next;
@@ -90,7 +114,7 @@ void		ft_display_short(t_env env, t_list *list, int elem_line)
 		if (i % elem_line == 0 && i != env.nb_file)
 		{
 			ft_printf("\033[u");
-			len += env.nb_file - 6;
+			len += env.max_filename_len + 1;
 		}
 	}
 }
