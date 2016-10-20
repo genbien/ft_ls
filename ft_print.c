@@ -6,16 +6,18 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/20 12:10:14 by tbouder           #+#    #+#             */
-/*   Updated: 2016/10/20 12:14:49 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/10/20 17:21:28 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-void		ft_print_color(t_file_data *data)
+void		ft_print_color(t_env env, t_file_data *data)
 {
 	if (data->type == 'd')
 		ft_printf("{117}%s{0}", data->filename);
+	else if (env.flags.l && data->type == 'l')
+		ft_printf("{213}%s{0} -> %s", data->filename, data->link);
 	else if (data->type == 'l')
 		ft_printf("{213}%s{0}", data->filename);
 	else if (data->type == '-'

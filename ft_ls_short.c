@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/19 19:35:33 by tbouder           #+#    #+#             */
-/*   Updated: 2016/10/20 17:06:58 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/10/20 17:20:27 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,7 @@ void		ft_display_short(t_env env, t_list *list, int elem_line)
 			ft_printf("\033[500000D");
 		else
 			ft_printf("\033[500000D\033[%dC", len);
-		ft_print_color(data);
+		ft_print_color(env, data);
 		ft_printf("\n");
 		list = list->next;
 		i++;

@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/26 15:30:10 by tbouder           #+#    #+#             */
-/*   Updated: 2016/10/20 15:51:41 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/10/20 17:21:58 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,14 +115,14 @@ void					ft_extract_blocks(t_env *env);
 char					*ft_join(char *s1, char *s2, char *divider);
 int						ft_is_symb_link(t_env env, char *dirname);
 int						ft_is_dir(t_env env, char *dirname);
-void					ft_print_color(t_file_data *data);
+void					ft_print_color(t_env env, t_file_data *data);
 t_list					*ft_lstinsert(void const *content, size_t c_size, t_list *next);
 
 /*
 ** SIMPLE
 */
 void					ft_ls_short(t_env env, t_list *list);
-void					ft_ls_one(t_list *list);
+void					ft_ls_one(t_env env, t_list *list);
 
 /*
 ** ARGS

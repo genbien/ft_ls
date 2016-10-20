@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/17 12:15:26 by tbouder           #+#    #+#             */
-/*   Updated: 2016/10/20 15:59:45 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/10/20 17:29:25 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,13 +39,13 @@ void		ft_print_list(t_env env)
 			env.max_size_len, data->size,
 			data->time_day, data->time_hour);
 
-			ft_print_color(data);
+			ft_print_color(env, data);
 			ft_printf("\n");
 			list = list->next;
 		}
 	}
 	else if (env.flags.one)
-		ft_ls_one(list);
+		ft_ls_one(env, list);
 	else
 		ft_ls_short(env, list);
 }
@@ -143,7 +143,7 @@ void		ft_launcher(t_env env, char *directory)
 				ft_extract_launcher(&env, ft_join(directory,
 					env.dir_content->d_name, "/"), 0);
 			(env.args >= 2) ? ft_printf("%s:\n", directory) : 0;
-			ft_print_list(env);
+			(env.lst) ? ft_print_list(env) : 0;
 			closedir(env.dir_fd);
 		}
 		else
