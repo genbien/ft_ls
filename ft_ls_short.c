@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/19 19:35:33 by tbouder           #+#    #+#             */
-/*   Updated: 2016/10/19 20:12:51 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/10/20 11:28:45 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,17 +34,23 @@ void		ft_scroll_down(int row, int pos, int elem_line)
 
 	to_scroll = row;
 
-	while (to_scroll < (pos + elem_line))
+	while (to_scroll <= (pos + elem_line))
 	{
-		ft_printf("\033D\033B");
+		ft_printf("\033D");
 		to_scroll++;
 	}
 	to_scroll = row;
-	while (to_scroll < (pos + elem_line))
+	while (to_scroll <= (pos + elem_line))
 	{
 		ft_printf("\033[A");
 		to_scroll++;
 	}
+	if ((pos + elem_line) % 2 == 0)
+	{
+		ft_printf("\033D");
+		ft_printf("\033[A");
+	}
+
 }
 
 void		ft_align_cursor(int elem_line, int nb_file)
@@ -54,7 +60,7 @@ void		ft_align_cursor(int elem_line, int nb_file)
 
 	i = 0;
 	nb_elem_last_row = elem_line - (nb_file % elem_line);
-	if (nb_elem_last_row != 4)
+	if (nb_elem_last_row != elem_line)
 	{
 		while (i < nb_elem_last_row)
 		{
@@ -72,17 +78,16 @@ void		ft_display_short(t_env env, t_list *list, int elem_line)
 
 	i = 0;
 	len = -1;
-	ft_printf("\033[s");
 	while (i < env.nb_file)
 	{
 		data = ((t_file_data *)list->content);
-		ft_printf("\033[500000D\033[%dC%s\n", len - 2, data->filename);
+		ft_printf("\033[500000D\033[%dC%s\n", len, data->filename);
 		list = list->next;
 		i++;
 		if (i % elem_line == 0 && i != env.nb_file)
 		{
 			ft_printf("\033[u");
-			len += env.nb_file - 3;
+			len += env.nb_file;
 		}
 	}
 }
@@ -100,11 +105,13 @@ void		ft_ls_short(t_env env, t_list *list)
 	pos = ft_get_current_line();
 	if (pos + elem_line >= w.ws_row)
 	{
-		// ft_printf("J'ai au total [%d] lignes et je suis a la pos [%d]. J'ai [%d] lignes a mettre\n", w.ws_row, pos, elem_line);
-		// ft_printf("TANT QUE [%d] < [%d] + [%d] (%d)\n", w.ws_row, pos, elem_line, pos+elem_line);
 		ft_scroll_down(w.ws_row, pos, elem_line);
-		//TESTER DE SAVE LA POSITION 
+		pos = ft_get_current_line();
 	}
+	if (pos > (w.ws_row - elem_line))
+		ft_printf("\033[A\033[s\033[B");
+	else
+		ft_printf("\033[s");
 	ft_display_short(env, list, elem_line);
 	ft_align_cursor(elem_line, env.nb_file);
 }

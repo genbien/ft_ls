@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/26 15:30:10 by tbouder           #+#    #+#             */
-/*   Updated: 2016/10/19 19:52:04 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/10/20 11:20:39 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,9 +105,9 @@ int						ft_is_dir(t_env env, char *dirname);
 /*
 ** SIMPLE
 */
-int						ft_get_current_line();
-void					ft_scroll_down(int row, int pos, int elem_line);
-void					ft_align_cursor(int elem_line, int nb_file);
+// int						ft_get_current_line();
+// void					ft_scroll_down(int row, int pos, int elem_line);
+// void					ft_align_cursor(int elem_line, int nb_file);
 void					ft_ls_short(t_env env, t_list *list);
 
 
