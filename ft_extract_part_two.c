@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/18 16:01:18 by tbouder           #+#    #+#             */
-/*   Updated: 2016/10/18 16:02:48 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/10/28 12:46:49 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,32 +14,17 @@
 
 void		ft_extract_owner(t_env *env)
 {
-	int		ownerlen;
-
 	env->data->owner = ft_strinit(getpwuid(env->stats.st_uid)->pw_name);
-	ownerlen = ft_strlen(env->data->owner);
-	if (ownerlen > env->max_owner_len)
-		env->max_owner_len = ownerlen;
 }
 
 void		ft_extract_group(t_env *env)
 {
-	int		grouplen;
-
 	env->data->group = ft_strinit(getgrgid(env->stats.st_gid)->gr_name);
-	grouplen = ft_strlen(env->data->group);
-	if (grouplen > env->max_group_len)
-		env->max_group_len = grouplen;
 }
 
 void		ft_extract_size(t_env *env)
 {
-	int		sizelen;
-
 	env->data->size = env->stats.st_size;
-	sizelen = ft_nbrlen(env->data->size);
-	if (sizelen > env->max_size_len)
-		env->max_size_len = sizelen;
 }
 
 void		ft_extract_time(t_env *env)

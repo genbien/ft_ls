@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/19 19:35:33 by tbouder           #+#    #+#             */
-/*   Updated: 2016/10/20 17:20:27 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/03 22:22:50 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,20 @@ void		ft_scroll_down(int row, int pos, int elem_line)
 
 }
 
+void		ft_scroll_up(int elem_line, int row)
+{
+	int		pos;
+	int		x;
+
+	pos = ft_get_current_line();
+	x = 0;
+	while ((pos + elem_line + x) > row)
+	{
+		ft_printf("\033[A");
+		x--;
+	}
+}
+
 void		ft_align_cursor(int elem_line, int nb_file)
 {
 	int		i;
@@ -91,54 +105,104 @@ void		ft_align_cursor(int elem_line, int nb_file)
 	}
 }
 
-void		ft_display_short(t_env env, t_list *list, int elem_line)
+void		ft_print_elem(t_env env, t_file_data *data, int len)
 {
-	t_file_data	*data;
+	ft_printf(len == 0 ? "\033[500000D" : "\033[500000D\033[%dC", len);
+	ft_print_color(env, data);
+	ft_printf("\n");
+}
+
+void		ft_display_short(t_env env, t_list *list, int elem_line, t_data_max max)
+{
 	int			i;
 	int			len;
 
 	i = 0;
 	len = 0;
-	while (i < env.nb_file)
+	while (list)
 	{
-		data = ((t_file_data *)list->content);
-
-		if (len == 0)
-			ft_printf("\033[500000D");
-		else
-			ft_printf("\033[500000D\033[%dC", len);
-		ft_print_color(env, data);
-		ft_printf("\n");
+		if (!env.flags.a && EQU(((t_file_data *)list->content)->filename, "."))
+		{
+			list = list->next;
+			continue ;
+		}
+		ft_print_elem(env, ((t_file_data *)list->content), len);
 		list = list->next;
 		i++;
-		if (i % elem_line == 0 && i != env.nb_file)
+		if (i % elem_line == 0 && i != max.nb_file)
 		{
-			ft_printf("\033[u");
-			len += env.max_filename_len + 1;
+			len += max.max_filename_len + 1;
+			if (list)
+				ft_printf("\033[u");
+			ft_scroll_up(elem_line, env.w.ws_row);
 		}
 	}
 }
 
-void		ft_ls_short(t_env env, t_list *list)
+void		ft_display_short_alte(t_env env, t_list *list, int elem_line, t_data_max max, int buffer)
 {
-	struct winsize	w;
+	int			i;
+	int			len;
+
+	i = 0;
+	len = 0;
+	while (list)
+	{
+		if (!env.flags.a && EQU(((t_file_data *)list->content)->filename, "."))
+		{
+			list = list->next;
+			continue ;
+		}
+		if (i >= buffer && i < buffer + elem_line - (elem_line - env.w.ws_row + 1))
+			ft_print_elem(env, ((t_file_data *)list->content), len);
+		list = list->next;
+		i++;
+		if (i == elem_line)
+		{
+			i = 0;
+			len += max.max_filename_len + 1;
+			if (list)
+				ft_printf("\033[u");
+			ft_printf("\033[%dA", elem_line - buffer);
+		}
+	}
+	ft_printf("\033[%dB", elem_line - buffer);
+}
+
+void		ft_ls_short(t_env env, t_list *list, t_data_max max)
+{
 	int				nb_column;
 	int				elem_line;
 	int				pos;
+	int				buffer;
 
-	ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-	nb_column = w.ws_col / env.max_filename_len;
-	elem_line = env.nb_file / nb_column + ((env.nb_file % nb_column) ? 1 : 0);
+	if (max.nb_file == 0)
+		return ;
+	ioctl(STDOUT_FILENO, TIOCGWINSZ, &env.w);
+	nb_column = env.w.ws_col / max.max_filename_len;
+	elem_line = max.nb_file / nb_column + ((max.nb_file % nb_column) ? 1 : 0);
 	pos = ft_get_current_line();
-	if (pos + elem_line >= w.ws_row)
+	buffer = 0;
+
+	ft_printf("\033[s");
+	if (elem_line > env.w.ws_row)
 	{
-		ft_scroll_down(w.ws_row, pos, elem_line);
-		pos = ft_get_current_line();
+		while (buffer < elem_line)
+		{
+			ft_display_short_alte(env, list, elem_line, max, buffer);
+			ft_printf("\033[s");
+			buffer += env.w.ws_row;
+		}
 	}
-	if (pos > (w.ws_row - elem_line))
-		ft_printf("\033[A\033[s\033[B");
 	else
-		ft_printf("\033[s");
-	ft_display_short(env, list, elem_line);
-	ft_align_cursor(elem_line, env.nb_file);
+	{
+		if (pos + elem_line >= env.w.ws_row)
+		{
+			ft_scroll_down(env.w.ws_row, pos, elem_line);
+			pos = ft_get_current_line();
+		}
+		ft_printf(pos > (env.w.ws_row - elem_line) ? "\033[A\033[s\033[B" : "\033[s");
+		ft_display_short(env, list, elem_line, max);
+	}
+	ft_align_cursor(elem_line, max.nb_file);
 }

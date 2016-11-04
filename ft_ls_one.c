@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/19 19:35:33 by tbouder           #+#    #+#             */
-/*   Updated: 2016/10/20 17:21:52 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/10/31 16:31:31 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,13 @@ void		ft_ls_one(t_env env, t_list *list)
 	while (list)
 	{
 		data = ((t_file_data *)list->content);
+		if (!env.flags.a && EQU(data->filename, "."))
+		{
+			list = list->next;
+			continue ;
+		}
 		ft_print_color(env, data);
-		ft_printf("\n");
+		ft_putchar('\n');
 		list = list->next;
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/18 16:01:18 by tbouder           #+#    #+#             */
-/*   Updated: 2016/10/20 14:54:17 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/03 23:21:11 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,19 +14,19 @@
 
 void		ft_extract_filename(t_env *env, char *dirname)
 {
-	int		filelen;
-
 	if (dirname == NULL)
 		env->data->filename = ft_strinit(env->dir_content->d_name);
 	else
 		env->data->filename = ft_strinit(dirname);
-	filelen = ft_strlen(env->data->filename);
-	if (filelen > env->max_filename_len)
-		env->max_filename_len = filelen;
 }
 
 void		ft_extract_type(t_env *env)
 {
+	char	*dir;
+
+	dir = ft_strinit(env->directory ? env->directory : env->data->filename);
+	if (!env->flags.a && EQU(env->data->filename, "."))
+		return ;
 	S_ISDIR(env->stats.st_mode) ? env->data->type = 'd' : 0;
 	S_ISREG(env->stats.st_mode) ? env->data->type = '-' : 0;
 	S_ISLNK(env->stats.st_mode) ? env->data->type = 'l' : 0;
@@ -37,12 +37,14 @@ void		ft_extract_type(t_env *env)
 	if (env->data->type == 'l')
 	{
 		env->data->link = malloc(env->stats.st_size + 1);
-		readlink(env->directory, env->data->link, env->stats.st_size + 1);
+		readlink(dir, env->data->link, SSIZE_MAX);
 	}
 }
 
 void		ft_extract_perm(t_env *env)
 {
+	if (!env->flags.a && EQU(env->data->filename, "."))
+		return ;
 	env->data->usr_r = env->stats.st_mode & S_IRUSR ? 'r' : '-';
 	env->data->usr_w = env->stats.st_mode & S_IWUSR ? 'w' : '-';
 	env->data->usr_x = env->stats.st_mode & S_IXUSR ? 'x' : '-';
@@ -57,11 +59,15 @@ void		ft_extract_perm(t_env *env)
 
 void		ft_extract_attributs(t_env *env)
 {
+	char	*dir;
 	acl_t		acl;
 	ssize_t		xattr;
 
-	xattr = listxattr(env->directory, NULL, 0, XATTR_NOFOLLOW);
-	acl = acl_get_link_np(env->directory, ACL_TYPE_EXTENDED);
+	dir = ft_strinit(env->directory ? env->directory : env->data->filename);
+	if (!env->flags.a && EQU(env->data->filename, "."))
+		return ;
+	xattr = listxattr(dir, NULL, 0, XATTR_NOFOLLOW);
+	acl = acl_get_link_np(dir, ACL_TYPE_EXTENDED);
 	if (xattr > 0)
 		env->data->attrib = '@';
 	else if (acl != NULL)
@@ -72,10 +78,7 @@ void		ft_extract_attributs(t_env *env)
 
 void		ft_extract_hard_links(t_env *env)
 {
-	int		linklen;
-
+	if (!env->flags.a && EQU(env->data->filename, "."))
+		return ;
 	env->data->hard_link = env->stats.st_nlink;
-	linklen = ft_nbrlen(env->data->hard_link);
-	if (linklen > env->max_link_len)
-		env->max_link_len = linklen;
 }

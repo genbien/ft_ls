@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/20 14:18:21 by tbouder           #+#    #+#             */
-/*   Updated: 2016/10/20 15:50:07 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/10/28 18:46:47 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ static void		ft_lstinsert_args(t_list **list, void *content, size_t c_size)
 
 	been_inserted = 0;
 	new_list = *list;
+	c_size += 1;
 	if (new_list && strcmp(new_list->content, content) > 0)
 		*list = ft_lstinsert(content, c_size, new_list);
 	else if (new_list)
@@ -45,16 +46,18 @@ void			ft_sort_args(t_env *env, char **av, int ac)
 	int		i;
 
 	i = ac;
+	if (i == 0)
+		ft_lstinsert_args(&env->lst_dir, ".", 1);
 	while (av[i])
 	{
 		if (lstat(av[i], &(env->stats)) == -1)
-			ft_lstinsert_args(&env->lst_none, av[i], sizeof(av[i]));
+			ft_lstinsert_args(&env->lst_none, av[i], ft_strlen(av[i]));
 		else
 		{
 			if (S_ISDIR(env->stats.st_mode))
-				ft_lstinsert_args(&env->lst_dir, av[i], sizeof(av[i]));
+				ft_lstinsert_args(&env->lst_dir, av[i], ft_strlen(av[i]));
 			else
-				ft_lstinsert_args(&env->lst_file, av[i], sizeof(av[i]));
+				ft_lstinsert_args(&env->lst_file, av[i], ft_strlen(av[i]));
 		}
 		i++;
 	}
