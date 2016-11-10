@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/26 15:30:10 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/03 23:28:50 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/10 15:04:10 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@
 # include <uuid/uuid.h>
 # include <dirent.h>
 
+# include <errno.h>
+
 # include <sys/xattr.h>
 # include <sys/acl.h> //BONUS
 # include <sys/ioctl.h> //BONUS affichage colones
@@ -30,7 +32,7 @@
 
 # include "libft/libft.h"
 
-# define FLAGS 			env->flags
+# define FLAGS 			options->flags
 # define IS_DIRECTORY	S_ISDIR(env->stats.st_mode)
 # define IS_LINK		S_ISLNK(env->stats.st_mode)
 # define IS_NOT_DOTDOT	ft_strcmp(env->dir_content->d_name, "..")
@@ -78,17 +80,6 @@ typedef struct			s_data_max
 	int					nb_file;
 }						t_data_max;
 
-typedef struct			s_ls_flag
-{
-	int					l;
-	int					rec;
-	int					a;
-	int					r;
-	int					t;
-	int					one;
-	int					two; //HIDDEN ONLY
-}						t_ls_flag;
-
 typedef struct			s_lslst
 {
 	char				*directory;
@@ -109,36 +100,32 @@ typedef struct			s_env
 	struct stat			stats;
 	struct winsize		w;
 
-	t_lslst				*o_list;
+	t_btree				*btree;
 
 	t_list				*lst;
 	t_list				*lst_dir;
 	t_list				*lst_file;
 	t_list				*lst_none;
 
-	t_ls_flag			flags;
+	t_options			*options;
 
 	int					blocks;
 }						t_env;
 
+
 /*
 ** Recur : Start the main thread
 */
-void		ft_recur_start(DIR *current_directory, t_env *env, char *directory, t_lslst **o_list);
+void		ft_recur_launcher(DIR *cur_dir, t_env *env, char *directory);
+void		ft_manage_dir(t_env *env, char *directory, DIR *cur_dir, int booh);
+
+
+void		ft_manage_file(t_env *env, char *directory);
 
 /*
 ** lstinsert : Insert each file in each matching directory_list
 */
-void		ft_lstinsert_picker(t_env env, t_lslst *list);
-
-/*
-** lslstinsert + helper : Create new directory_list if new directory
-*/
-void		ft_lslstinsert_picker(t_env env, t_lslst **list, char *dir, int is_dir);
-t_lslst		*ft_lslstnew(t_env env, char *directory, int is_dir, t_lslst *next);
-void		ft_data_max_assign(t_env *env, t_lslst **lslst);
-int			ft_loop_part(t_env env, t_lslst *tmp, char *dir, int is_dir);
-t_lslst		*ft_loop_base(t_env env, t_lslst *tmp, char *dir, int is_dir);
+void		ft_lstinsert_picker(t_env env, t_list **list);
 
 /*
 ** extract_part : Extract all the needed datas
@@ -161,31 +148,29 @@ t_list					*ft_lstinsert(void const *content, size_t c_size, t_list *next);
 char					*ft_join(char *s1, char *s2, char *divider);
 int						ft_perm_denied(t_env env, char *directory);
 int						ft_donot_continue(t_env env, char *filename);
-t_lslst					*ft_navigate_o_list(t_lslst **o_list, char *dirtogo);
 
 /*
 ** PRINT
 */
 int						ft_print_perm_denied(t_env env, char *directory);
 void					ft_print_color(t_env env, t_file_data *data);
-void					ft_print_list(t_env env);
 
 /*
 ** SIMPLE
 */
 void					ft_ls_short(t_env env, t_list *list, t_data_max max);
 void					ft_ls_one(t_env env, t_list *list);
-void					ft_ls_long(t_env env, t_list *list, t_lslst *lslst);
+void					ft_ls_long(t_env env, t_list *list, int is_dir, t_data_max max);
 
 /*
 ** ARGS
 */
-int						ft_extract_flags(char **av, t_env *env);
 void					ft_sort_args(t_env *env, char **av, int ac);
 
 /*
 ** INIT
 */
 void					ft_init_env(t_env *env);
+void					ft_init_data(t_env *env);
 
 #endif

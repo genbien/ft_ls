@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/19 19:35:33 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/03 22:22:50 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/10 13:55:56 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,6 @@ void		ft_scroll_down(int row, int pos, int elem_line)
 	int		to_scroll;
 
 	to_scroll = row;
-
 	while (to_scroll <= (pos + elem_line))
 	{
 		ft_printf("\033D");
@@ -119,9 +118,10 @@ void		ft_display_short(t_env env, t_list *list, int elem_line, t_data_max max)
 
 	i = 0;
 	len = 0;
+
 	while (list)
 	{
-		if (!env.flags.a && EQU(((t_file_data *)list->content)->filename, "."))
+		if (!env.FLAGS['a'] && EQU(((t_file_data *)list->content)->filename, "."))
 		{
 			list = list->next;
 			continue ;
@@ -148,7 +148,7 @@ void		ft_display_short_alte(t_env env, t_list *list, int elem_line, t_data_max m
 	len = 0;
 	while (list)
 	{
-		if (!env.flags.a && EQU(((t_file_data *)list->content)->filename, "."))
+		if (!env.FLAGS['a'] && EQU(((t_file_data *)list->content)->filename, "."))
 		{
 			list = list->next;
 			continue ;
@@ -180,6 +180,7 @@ void		ft_ls_short(t_env env, t_list *list, t_data_max max)
 		return ;
 	ioctl(STDOUT_FILENO, TIOCGWINSZ, &env.w);
 	nb_column = env.w.ws_col / max.max_filename_len;
+	nb_column == 0 ? nb_column = 1 : 0;
 	elem_line = max.nb_file / nb_column + ((max.nb_file % nb_column) ? 1 : 0);
 	pos = ft_get_current_line();
 	buffer = 0;

@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/17 12:15:26 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/03 18:33:08 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/10 14:48:52 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,32 +26,36 @@ void		ft_process_none(t_env *env)
 
 void		ft_process_files(t_env *env)
 {
+	char	*directory;
+
 	while (env->lst_file)
 	{
-		ft_recur_start(opendir(env->lst_file->content), env, env->lst_file->content, &env->o_list);
-		ft_print_list(*env);
+		directory = ft_strinit(env->lst_file->content);
+		ft_manage_file(env, directory);
+		ft_strdel(&directory);
 
 		//NEED TO RESET THE O_LIST + THE BLOCK
 		env->blocks = 0;
-		env->o_list = NULL;
 
 		env->lst_file = env->lst_file->next;
-		env->lst_file ? ft_putchar('\n') : 0;
+		!env->lst_file ? ft_putchar('\n') : 0;
 	}
 }
 
 void		ft_process_dir(t_env *env)
 {
+	char	*directory;
+
 	while (env->lst_dir)
 	{
-		(env->args >= 2) ? ft_printf("%s:\n", env->lst_dir->content) : 0;
-		ft_recur_start(opendir(env->lst_dir->content), env, env->lst_dir->content, &env->o_list);
-		ft_print_list(*env);
+		directory = ft_strinit(env->lst_dir->content);
+		(env->args >= 2) ? ft_printf("%s:\n", directory) : 0;
+		ft_manage_dir(env, directory, opendir(directory), 0);
+		ft_recur_launcher(opendir(directory), env, directory);
+		ft_strdel(&directory);
 
 		//NEED TO RESET THE O_LIST + THE BLOCK
 		env->blocks = 0;
-		env->o_list = NULL;
-
 		env->lst_dir = env->lst_dir->next;
 		env->lst_dir ? ft_putchar('\n') : 0;
 	}
@@ -63,9 +67,9 @@ int			main(int ac, char **av)
 	int		i;
 
 	ft_init_env(&env);
-	i = ft_extract_flags(av, &env);
+	env.options = (t_options *)malloc(sizeof(t_options));
+	i = ft_extract_options(av, env.options);
 	env.args = ac - i;
-
 	if (i == ac)
 	{
 		ft_sort_args(&env, av, 0);

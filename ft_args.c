@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/20 14:18:21 by tbouder           #+#    #+#             */
-/*   Updated: 2016/10/28 18:46:47 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/10 14:43:35 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,29 +61,4 @@ void			ft_sort_args(t_env *env, char **av, int ac)
 		}
 		i++;
 	}
-}
-
-int				ft_extract_flags(char **av, t_env *env)
-{
-	int		i;
-	int		j;
-
-	i = 1;
-	while (av[i] && av[i][0] == '-' && ft_isalnum(av[i][1]))
-	{
-		j = 1;
-		while (av[i][j] != '\0' && ft_isalnum(av[i][j]))
-		{
-			av[i][j] == 'l' ? env->flags.l = 1 : 0;
-			av[i][j] == 'R' ? env->flags.rec = 1 : 0;
-			av[i][j] == 'a' ? env->flags.a = 1 : 0;
-			av[i][j] == 'r' ? env->flags.r = 1 : 0;
-			av[i][j] == 't' ? env->flags.t = 1 : 0;
-			av[i][j] == '1' ? env->flags.one = 1 : 0;
-			av[i][j] == '2' ? env->flags.two = 1 : 0;
-			j++;
-		}
-		i++;
-	}
-	return (i);
 }

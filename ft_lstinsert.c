@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/02 17:01:37 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/03 15:47:37 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/10 14:09:25 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,14 +111,14 @@ static void		ft_lstinsert_revtm(t_list **list, void *content, size_t c_size)
 		*list = ft_lstnew(content, c_size);
 }
 
-void			ft_lstinsert_picker(t_env env, t_lslst *list)
+void			ft_lstinsert_picker(t_env env, t_list **list)
 {
-	if (env.flags.r && env.flags.t)
-		ft_lstinsert_revtm(&list->lst, env.data, sizeof(t_file_data));
-	else if (env.flags.r)
-		ft_lstinsert_rev(&list->lst, env.data, sizeof(t_file_data));
-	else if (env.flags.t)
-		ft_lstinsert_time(&list->lst, env.data, sizeof(t_file_data));
+	if (env.FLAGS['r'] && env.FLAGS['t'])
+		ft_lstinsert_revtm(list, env.data, sizeof(t_file_data));
+	else if (env.FLAGS['r'])
+		ft_lstinsert_rev(list, env.data, sizeof(t_file_data));
+	else if (env.FLAGS['t'])
+		ft_lstinsert_time(list, env.data, sizeof(t_file_data));
 	else
-		ft_lstinsert_ascii(&list->lst, env.data, sizeof(t_file_data));
+		ft_lstinsert_ascii(list, env.data, sizeof(t_file_data));
 }
