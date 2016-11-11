@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/18 16:01:18 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/10 15:17:20 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/11 23:17:59 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,15 +36,8 @@ void		ft_extract_type(t_env *env)
 	S_ISSOCK(env->stats.st_mode) ? env->data->type = 's' : 0;
 	if (env->data->type == 'l')
 	{
-		errno = 0;
-		// env->data->link = NULL;
-		// env->data->link = (char *)malloc(env->stats.st_size + 1);
-		ft_strnew(env->stats.st_size + 1);
+		env->data->link = ft_strnew(env->stats.st_size + 1);
 		readlink(dir, env->data->link, SSIZE_MAX);
-		// ft_printf("{9}%s : %c{0}\n", env->data->link, env->data->type);
-		// ft_printf("{9}%s : %c{0}\n", env->, env->data->type);
-		ft_printf("{9}ft_ls: %s: %s\n\n{0}", env->directory, strerror(errno));
-
 	}
 }
 

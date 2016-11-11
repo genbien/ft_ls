@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/19 19:35:33 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/10 13:55:56 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/11 23:26:42 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,7 +179,7 @@ void		ft_ls_short(t_env env, t_list *list, t_data_max max)
 	if (max.nb_file == 0)
 		return ;
 	ioctl(STDOUT_FILENO, TIOCGWINSZ, &env.w);
-	nb_column = env.w.ws_col / max.max_filename_len;
+	nb_column = (env.w.ws_col - 3) / max.max_filename_len;
 	nb_column == 0 ? nb_column = 1 : 0;
 	elem_line = max.nb_file / nb_column + ((max.nb_file % nb_column) ? 1 : 0);
 	pos = ft_get_current_line();
