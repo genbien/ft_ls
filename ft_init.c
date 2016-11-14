@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/20 15:50:53 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/10 14:58:23 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/14 15:52:15 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,17 +22,6 @@ static void		ft_init_lst(t_env *env)
 	env->lst_dir = NULL;
 	env->lst_file = NULL;
 	env->lst_none = NULL;
-}
-
-void			ft_init_env(t_env *env)
-{
-	(!(env->data = (t_file_data *)malloc(sizeof(t_file_data)))) ? exit(1) : 0;
-	ft_init_lst(env);
-	env->args = 0;
-	env->directory = NULL;
-	env->dir_fd = NULL;
-	env->dir_content = NULL;
-	env->blocks = 0;
 }
 
 void			ft_init_data(t_env *env)
@@ -60,4 +49,15 @@ void			ft_init_data(t_env *env)
 	env->data->timestamp = 0;
 	env->data->major = 0;
 	env->data->minor = 0;
+}
+
+void			ft_init_env(t_env *env)
+{
+	(!(env->data = (t_file_data *)malloc(sizeof(t_file_data)))) ? exit(1) : 0;
+	ft_init_lst(env);
+	env->args = 0;
+	env->directory = NULL;
+	env->dir_fd = NULL;
+	env->dir_content = NULL;
+	env->blocks = 0;
 }

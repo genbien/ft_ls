@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/26 15:30:10 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/10 15:04:10 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/14 12:52:45 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
 # include <errno.h>
 
 # include <sys/xattr.h>
-# include <sys/acl.h> //BONUS
+# include <sys/acl.h> //BONUS ACL
 # include <sys/ioctl.h> //BONUS affichage colones
 # include <termios.h> //BONUS affichage colones
 
@@ -58,7 +58,7 @@ typedef struct			s_file_data
 	char				*link;
 	char				*owner;
 	char				*group;
-	int					size;
+	long				size;
 	char				*time;
 	char				*time_day;
 	char				*time_hour;
@@ -76,7 +76,7 @@ typedef struct			s_data_max
 	int					max_size_len;
 	int					max_major_len;
 	int					max_minor_len;
-	int					blocks;
+	long				blocks;
 	int					nb_file;
 }						t_data_max;
 
@@ -120,7 +120,12 @@ void		ft_recur_launcher(DIR *cur_dir, t_env *env, char *directory);
 void		ft_manage_dir(t_env *env, char *directory, DIR *cur_dir, int booh);
 
 
-void		ft_manage_file(t_env *env, char *directory);
+void		ft_manage_file(t_env *env);
+
+/*
+** Btree_cmp
+*/
+void 		ft_cmp(t_env *env, t_btree **btree, void const *content, size_t c_size);
 
 /*
 ** lstinsert : Insert each file in each matching directory_list

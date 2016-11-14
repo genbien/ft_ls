@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/17 12:15:26 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/10 14:48:52 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/14 16:06:52 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,38 +26,29 @@ void		ft_process_none(t_env *env)
 
 void		ft_process_files(t_env *env)
 {
-	char	*directory;
-
-	while (env->lst_file)
-	{
-		directory = ft_strinit(env->lst_file->content);
-		ft_manage_file(env, directory);
-		ft_strdel(&directory);
-
-		//NEED TO RESET THE O_LIST + THE BLOCK
-		env->blocks = 0;
-
-		env->lst_file = env->lst_file->next;
-		!env->lst_file ? ft_putchar('\n') : 0;
-	}
+	if (env->lst_file)
+		ft_manage_file(env);
 }
 
 void		ft_process_dir(t_env *env)
 {
 	char	*directory;
+	t_list	*list;
 
-	while (env->lst_dir)
+	list = env->lst_dir;
+	while (list)
 	{
-		directory = ft_strinit(env->lst_dir->content);
+		directory = ft_strinit(list->content);
 		(env->args >= 2) ? ft_printf("%s:\n", directory) : 0;
 		ft_manage_dir(env, directory, opendir(directory), 0);
 		ft_recur_launcher(opendir(directory), env, directory);
 		ft_strdel(&directory);
+		ft_printf("\033[A"); //CHEAT TO REMOVE LAST \n
 
 		//NEED TO RESET THE O_LIST + THE BLOCK
 		env->blocks = 0;
-		env->lst_dir = env->lst_dir->next;
-		env->lst_dir ? ft_putchar('\n') : 0;
+		list = list->next;
+		list ? ft_putchar('\n') : 0;
 	}
 }
 
@@ -82,5 +73,11 @@ int			main(int ac, char **av)
 		ft_process_files(&env);
 		ft_process_dir(&env);
 	}
+	free(env.options);
+	free(env.data);
+	ft_lstclr(&env.lst_dir);
+	ft_lstclr(&env.lst_file);
+	ft_lstclr(&env.lst_none);
+	ft_lstclr(&env.lst);
 	return (0);
 }

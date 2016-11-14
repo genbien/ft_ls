@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/18 16:01:18 by tbouder           #+#    #+#             */
-/*   Updated: 2016/10/28 12:46:49 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/14 15:59:48 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void		ft_extract_time(t_env *env)
 	char		*tmp2;
 	time_t		current_time;
 
-	date = ctime(&env->stats.st_mtime);
+	date = ft_strinit(ctime(&env->stats.st_mtime));
 	env->data->timestamp = env->stats.st_mtime;
 	current_time = time(NULL);
 	tmp1 = ft_strsub(date, 4, 3);
@@ -53,6 +53,7 @@ void		ft_extract_time(t_env *env)
 	}
 	else
 		env->data->time_hour = ft_strsub(date, 20, 4);
+	ft_strdel(&date);
 }
 
 void		ft_extract_blocks(t_env *env)
