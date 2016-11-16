@@ -6,11 +6,39 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/17 12:15:26 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/14 16:06:52 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/15 14:12:18 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
+
+int			ft_extract_options_ls(char **av, t_options *options)
+{
+	int		i;
+	int		j;
+	int		k;
+	int		is_one;
+	int		value;
+
+	k = 0;
+	while (k < 122)
+		options->flags[k++] = FALSE;
+	i = 1;
+	while (av[i] && av[i][0] == '-' && ft_isalnum(av[i][1]))
+	{
+		j = 1;
+		while (av[i][j] != '\0' && ft_isalnum(av[i][j]))
+		{
+			value = av[i][j];
+			is_one == TRUE && value == 'l' ? options->flags['1'] = FALSE : 0;
+			value == '1' ? is_one = TRUE : 0;
+			options->flags[value] = TRUE;
+			j++;
+		}
+		i++;
+	}
+	return (i);
+}
 
 void		ft_process_none(t_env *env)
 {
@@ -27,7 +55,11 @@ void		ft_process_none(t_env *env)
 void		ft_process_files(t_env *env)
 {
 	if (env->lst_file)
+	{
 		ft_manage_file(env);
+		if (!env->lst_dir)
+			ft_printf("\033[A"); //CHEAT TO REMOVE LAST \n
+	}
 }
 
 void		ft_process_dir(t_env *env)
@@ -52,6 +84,17 @@ void		ft_process_dir(t_env *env)
 	}
 }
 
+
+void		ft_clear_env(t_env *env)
+{
+	free(env->options);
+	free(env->data);
+	ft_lstclr(&env->lst_dir);
+	ft_lstclr(&env->lst_file);
+	ft_lstclr(&env->lst_none);
+	ft_lstclr(&env->lst);
+}
+
 int			main(int ac, char **av)
 {
 	t_env	env;
@@ -59,7 +102,7 @@ int			main(int ac, char **av)
 
 	ft_init_env(&env);
 	env.options = (t_options *)malloc(sizeof(t_options));
-	i = ft_extract_options(av, env.options);
+	i = ft_extract_options_ls(av, env.options);
 	env.args = ac - i;
 	if (i == ac)
 	{
@@ -73,11 +116,6 @@ int			main(int ac, char **av)
 		ft_process_files(&env);
 		ft_process_dir(&env);
 	}
-	free(env.options);
-	free(env.data);
-	ft_lstclr(&env.lst_dir);
-	ft_lstclr(&env.lst_file);
-	ft_lstclr(&env.lst_none);
-	ft_lstclr(&env.lst);
+	ft_clear_env(&env);
 	return (0);
 }

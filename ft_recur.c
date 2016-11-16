@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/22 12:04:31 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/14 15:20:24 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/15 14:27:49 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,22 @@ void		ft_free_data(t_file_data *data)
 	ft_strdel(&data->time);
 	ft_strdel(&data->time_day);
 	ft_strdel(&data->time_hour);
+	data->type = 0;
+	data->usr_r = 0;
+	data->usr_w = 0;
+	data->usr_x = 0;
+	data->grp_r = 0;
+	data->grp_w = 0;
+	data->grp_x = 0;
+	data->oth_r = 0;
+	data->oth_w = 0;
+	data->oth_x = 0;
+	data->attrib = 0;
+	data->hard_link = 0;
+	data->size = 0;
+	data->timestamp = 0;
+	data->major = 0;
+	data->minor = 0;
 }
 
 void		ft_free_list(t_list **begin_list)
@@ -172,6 +188,7 @@ void		ft_manage_dir(t_env *env, char *directory, DIR *cur_dir, int booh)
 		ft_printf("{10}%s{0}:\n", directory);
 	ft_print_cont(env, list, data_max, 1);
 	ft_free_list(&list);
+	env->blocks = 0;
 	free(data_max);
 	ft_putchar('\n');
 }

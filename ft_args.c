@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/20 14:18:21 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/10 14:43:35 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/15 11:55:47 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,13 @@ static void		ft_lstinsert_args(t_list **list, void *content, size_t c_size)
 	been_inserted = 0;
 	new_list = *list;
 	c_size += 1;
-	if (new_list && strcmp(new_list->content, content) > 0)
+	if (new_list && ft_strcmp(new_list->content, content) > 0)
 		*list = ft_lstinsert(content, c_size, new_list);
 	else if (new_list)
 	{
 		while (new_list->next)
 		{
-			if (strcmp(new_list->next->content, content) > 0)
+			if (ft_strcmp(new_list->next->content, content) > 0)
 			{
 				new_list->next = ft_lstinsert(content, c_size, new_list->next);
 				been_inserted = 1;

@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/26 15:30:10 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/14 12:52:45 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/15 14:11:06 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ typedef struct			s_data_max
 	int					max_owner_len;
 	int					max_group_len;
 	int					max_link_len;
-	int					max_size_len;
+	long				max_size_len;
 	int					max_major_len;
 	int					max_minor_len;
 	long				blocks;
