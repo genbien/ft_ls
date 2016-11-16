@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/26 15:30:10 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/15 14:11:06 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/16 13:02:08 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ typedef struct			s_file_data
 	char				*time;
 	char				*time_day;
 	char				*time_hour;
-	long				timestamp;
+	long 				timestamp;
 	int					major;
 	int					minor;
 }						t_file_data;
@@ -140,8 +140,7 @@ void		ft_extract_type(t_env *env);
 void		ft_extract_perm(t_env *env);
 void		ft_extract_attributs(t_env *env);
 void		ft_extract_hard_links(t_env *env);
-void		ft_extract_owner(t_env *env);
-void		ft_extract_group(t_env *env);
+void		ft_extract_users(t_env *env);
 void		ft_extract_size(t_env *env);
 void		ft_extract_time(t_env *env);
 void		ft_extract_blocks(t_env *env);
@@ -159,6 +158,9 @@ int						ft_donot_continue(t_env env, char *filename);
 */
 int						ft_print_perm_denied(t_env env, char *directory);
 void					ft_print_color(t_env env, t_file_data *data);
+void					ft_print_ls(t_env *env, t_list *list, t_data_max *max, int is_dir);
+void					ft_print_errno(char *dirname);
+
 
 /*
 ** SIMPLE

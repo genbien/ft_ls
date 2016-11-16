@@ -6,30 +6,42 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/17 12:15:26 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/15 14:12:18 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/17 00:35:41 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
+static void	ft_extract_options_ls_helper(t_options *options)
+{
+	int		k;
+
+	k = 0;
+	while (k < 122)
+	{
+		options->flags[k] = FALSE;
+		k++;
+	}
+}
 int			ft_extract_options_ls(char **av, t_options *options)
 {
 	int		i;
 	int		j;
-	int		k;
 	int		is_one;
 	int		value;
 
-	k = 0;
-	while (k < 122)
-		options->flags[k++] = FALSE;
 	i = 1;
-	while (av[i] && av[i][0] == '-' && ft_isalnum(av[i][1]))
+	ft_extract_options_ls_helper(options);
+	while (av[i] && av[i][0] == '-')
 	{
 		j = 1;
-		while (av[i][j] != '\0' && ft_isalnum(av[i][j]))
+		if (av[i][j] == '\0')
+			return (i);
+		while (av[i][j] != '\0')
 		{
 			value = av[i][j];
+			if (value == '-')
+				return (i + 1);
 			is_one == TRUE && value == 'l' ? options->flags['1'] = FALSE : 0;
 			value == '1' ? is_one = TRUE : 0;
 			options->flags[value] = TRUE;
@@ -57,25 +69,32 @@ void		ft_process_files(t_env *env)
 	if (env->lst_file)
 	{
 		ft_manage_file(env);
-		if (!env->lst_dir)
-			ft_printf("\033[A"); //CHEAT TO REMOVE LAST \n
+		if (env->lst_dir)
+			ft_putchar('\n');
 	}
 }
 
 void		ft_process_dir(t_env *env)
 {
+	DIR		*to_explore;
 	char	*directory;
 	t_list	*list;
 
 	list = env->lst_dir;
 	while (list)
 	{
+		errno = 0;
 		directory = ft_strinit(list->content);
 		(env->args >= 2) ? ft_printf("%s:\n", directory) : 0;
-		ft_manage_dir(env, directory, opendir(directory), 0);
-		ft_recur_launcher(opendir(directory), env, directory);
+		to_explore = opendir(directory);
+		if (errno != 0)
+			ft_print_errno(directory);
+		else
+		{
+			ft_manage_dir(env, directory, opendir(directory), 0);
+			ft_recur_launcher(opendir(directory), env, directory);
+		}
 		ft_strdel(&directory);
-		ft_printf("\033[A"); //CHEAT TO REMOVE LAST \n
 
 		//NEED TO RESET THE O_LIST + THE BLOCK
 		env->blocks = 0;

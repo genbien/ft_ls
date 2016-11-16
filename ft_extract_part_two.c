@@ -6,19 +6,15 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/18 16:01:18 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/14 15:59:48 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/16 13:03:46 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-void		ft_extract_owner(t_env *env)
+void		ft_extract_users(t_env *env)
 {
 	env->data->owner = ft_strinit(getpwuid(env->stats.st_uid)->pw_name);
-}
-
-void		ft_extract_group(t_env *env)
-{
 	env->data->group = ft_strinit(getgrgid(env->stats.st_gid)->gr_name);
 }
 
@@ -26,6 +22,16 @@ void		ft_extract_size(t_env *env)
 {
 	env->data->size = env->stats.st_size;
 }
+
+void		ft_extract_time_helper(t_env *env, char *date)
+{
+	char	*tmp;
+
+	tmp = ft_strtrim(date + 20);
+	env->data->time_hour = ft_strjoin(" ", tmp);
+	ft_strdel(&tmp);
+}
+
 
 void		ft_extract_time(t_env *env)
 {
@@ -52,7 +58,7 @@ void		ft_extract_time(t_env *env)
 		ft_strdel(&tmp2);
 	}
 	else
-		env->data->time_hour = ft_strsub(date, 20, 4);
+		ft_extract_time_helper(env, date);
 	ft_strdel(&date);
 }
 

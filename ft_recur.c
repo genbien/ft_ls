@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/22 12:04:31 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/15 14:27:49 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/17 00:35:52 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,15 +21,14 @@ static void	ft_extract_data(t_env *env, char *filename)
 	ft_extract_time(env);
 	env->FLAGS['l'] ? ft_extract_attributs(env) : 0;
 	env->FLAGS['l'] ? ft_extract_hard_links(env) : 0;
-	env->FLAGS['l'] ? ft_extract_owner(env) : 0;
-	env->FLAGS['l'] ? ft_extract_group(env) : 0;
+	env->FLAGS['l'] ? ft_extract_users(env) : 0;
 	env->FLAGS['l'] ? ft_extract_size(env) : 0;
 	env->FLAGS['l'] ? ft_extract_blocks(env) : 0;
 	env->data->major = major(env->stats.st_rdev);
 	env->data->minor = minor(env->stats.st_rdev);
 }
 
-void		ft_data_max_init(t_data_max *max)
+static void	ft_data_max_init(t_data_max *max)
 {
 	max->max_filename_len = 0;
 	max->max_group_len = 0;
@@ -41,7 +40,7 @@ void		ft_data_max_init(t_data_max *max)
 	max->nb_file = 0;
 }
 
-void		ft_free_data(t_file_data *data)
+static void	ft_free_data(t_file_data *data)
 {
 	ft_strdel(&data->filename);
 	ft_strdel(&data->link);
@@ -68,7 +67,7 @@ void		ft_free_data(t_file_data *data)
 	data->minor = 0;
 }
 
-void		ft_free_list(t_list **begin_list)
+static void	ft_free_list(t_list **begin_list)
 {
 	t_list	*free_list;
 	t_list	*temp;
@@ -89,8 +88,7 @@ void		ft_free_list(t_list **begin_list)
 	}
 }
 
-
-void		ft_data_max_assign(t_env *env, t_data_max *max)
+static void	ft_data_max_assign(t_env *env, t_data_max *max)
 {
 	int		value;
 
@@ -114,17 +112,6 @@ void		ft_data_max_assign(t_env *env, t_data_max *max)
 		value > max->max_minor_len ? max->max_minor_len = value : 0;
 	}
 	max->nb_file += 1;
-}
-
-void		ft_print_cont(t_env *env, t_list *list, t_data_max *max, int is_dir)
-{
-	if (env->FLAGS['1'])
-		ft_ls_one(*env, list);
-	else if (env->FLAGS['l'])
-		ft_ls_long(*env, list, is_dir, *max);
-	else
-		ft_ls_short(*env, list, *max);
-	max = NULL;
 }
 
 /******************************************************************************/
@@ -151,10 +138,9 @@ void		ft_manage_file(t_env *env)
 		env->lst_file = env->lst_file->next;
 		ft_strdel(&FULL_PATH);
 	}
-	ft_print_cont(env, list, data_max, 0);
+	ft_print_ls(env, list, data_max, 0);
 	ft_free_list(&list);
 	free(data_max);
-	ft_putchar('\n');
 }
 
 void		ft_manage_dir(t_env *env, char *directory, DIR *cur_dir, int booh)
@@ -164,6 +150,7 @@ void		ft_manage_dir(t_env *env, char *directory, DIR *cur_dir, int booh)
 
 	data_max = NULL;
 	list = NULL;
+	lstat(directory, &(env->stats));
 	while ((env->dir_content = readdir(cur_dir)) != NULL)
 	{
 		FULL_PATH = ft_join(directory, env->dir_content->d_name, "/");
@@ -185,12 +172,12 @@ void		ft_manage_dir(t_env *env, char *directory, DIR *cur_dir, int booh)
 	}
 	closedir(cur_dir);
 	if (booh)
-		ft_printf("{10}%s{0}:\n", directory);
-	ft_print_cont(env, list, data_max, 1);
+		ft_printf("%s:\n", directory);
+		// ft_printf("{10}%s{0}:\n", directory);
+	ft_print_ls(env, list, data_max, 1);
 	ft_free_list(&list);
 	env->blocks = 0;
 	free(data_max);
-	ft_putchar('\n');
 }
 
 void		ft_explore_dir(t_env *env, t_btree *cur_dir)
@@ -202,28 +189,22 @@ void		ft_explore_dir(t_env *env, t_btree *cur_dir)
 	errno = 0;
 	if (cur_dir)
 	{
+		!env->FLAGS['r'] ? ft_putchar('\n') : 0;
 		ft_explore_dir(env, cur_dir->left);
-
-			dirname = ft_strinit((char *)cur_dir->content);
-			lstat(dirname, &(env->stats));
-			to_explore = opendir(dirname);
-			if (errno != 0)
-			{
-				char	*filename;
-
-				filename = ft_strinit(ft_strrchr(dirname, '/') + 1);
-				ft_printf("{10}%s{0}:\n", dirname);
-				ft_printf("ft_ls: %s: %s\n\n", filename, strerror(errno));
-				ft_strdel(&filename);
-			}
-			else
-			{
-				ft_manage_dir(env, dirname, to_explore, 1);
-				ft_recur_launcher(opendir(dirname), env, dirname);
-			}
-			ft_strdel(&dirname);
-
+		env->FLAGS['r'] ? ft_putchar('\n') : 0;
+		dirname = ft_strinit((char *)cur_dir->content);
+		lstat(dirname, &(env->stats));
+		to_explore = opendir(dirname);
+		if (errno != 0)
+			ft_print_errno(dirname);
+		else
+		{
+			ft_manage_dir(env, dirname, to_explore, 1);
+			ft_recur_launcher(opendir(dirname), env, dirname);
+		}
+		ft_strdel(&dirname);
 		ft_explore_dir(env, cur_dir->right);
+		// ft_putchar('\n');
 	}
 }
 

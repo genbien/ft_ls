@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/18 16:01:18 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/14 16:02:45 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/16 11:47:35 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,12 @@ void		ft_extract_perm(t_env *env)
 	env->data->oth_r = env->stats.st_mode & S_IROTH ? 'r' : '-';
 	env->data->oth_w = env->stats.st_mode & S_IWOTH ? 'w' : '-';
 	env->data->oth_x = env->stats.st_mode & S_IXOTH ? 'x' : '-';
-	env->stats.st_mode & S_ISVTX ? env->data->oth_x = 't' : 0;
+	if (env->stats.st_mode & S_ISUID)
+		env->data->usr_x = env->stats.st_mode & S_IXUSR ? 's' : 'S';
+	if (env->stats.st_mode & S_ISGID)
+		env->data->grp_x = env->stats.st_mode & S_IXGRP ? 's' : 'S';
+	if (env->stats.st_mode & S_ISVTX)
+		env->data->oth_x = env->stats.st_mode & S_IXOTH ? 't' : 'T';
 }
 
 void		ft_extract_attributs(t_env *env)
