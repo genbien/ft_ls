@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/22 12:04:31 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/17 00:35:52 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/17 23:24:58 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,16 +116,16 @@ static void	ft_data_max_assign(t_env *env, t_data_max *max)
 
 /******************************************************************************/
 
-void		ft_manage_file(t_env *env)
+void		ft_manage_file(t_env *env, t_list *lst)
 {
 	t_data_max	*data_max;
 	t_list		*list;
 
 	data_max = NULL;
 	list = NULL;
-	while (env->lst_file)
+	while (lst)
 	{
-		FULL_PATH = ft_strinit(env->lst_file->content);
+		FULL_PATH = ft_strinit(lst->content);
 		lstat(FULL_PATH, &(env->stats));
 		ft_extract_data(env, FULL_PATH);
 		ft_lstinsert_picker(*env, &list);
@@ -135,7 +135,7 @@ void		ft_manage_file(t_env *env)
 			ft_data_max_init(data_max);
 		}
 		ft_data_max_assign(env, data_max);
-		env->lst_file = env->lst_file->next;
+		lst = lst->next;
 		ft_strdel(&FULL_PATH);
 	}
 	ft_print_ls(env, list, data_max, 0);

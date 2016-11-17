@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/20 14:18:21 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/15 11:55:47 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/17 23:30:20 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ static void		ft_lstinsert_args(t_list **list, void *content, size_t c_size)
 void			ft_sort_args(t_env *env, char **av, int ac)
 {
 	int		i;
+	char	*str;
 
 	i = ac;
 	if (i == 0)
@@ -56,6 +57,17 @@ void			ft_sort_args(t_env *env, char **av, int ac)
 		{
 			if (S_ISDIR(env->stats.st_mode))
 				ft_lstinsert_args(&env->lst_dir, av[i], ft_strlen(av[i]));
+			else if (S_ISLNK(env->stats.st_mode))
+			{
+				str = ft_strnew(PATH_MAX);
+				readlink(av[i], str, PATH_MAX);
+				lstat(str, &(env->stats));
+				if (S_ISDIR(env->stats.st_mode))
+					ft_lstinsert_args(&env->lst_dir, av[i], ft_strlen(av[i]));
+				else
+					ft_lstinsert_args(&env->lst_file, av[i], ft_strlen(av[i]));
+				ft_strdel(&str);
+			}
 			else
 				ft_lstinsert_args(&env->lst_file, av[i], ft_strlen(av[i]));
 		}

@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/20 12:10:14 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/17 00:33:31 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/17 11:50:18 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,8 +64,7 @@ void		ft_print_ls(t_env *env, t_list *list, t_data_max *max, int is_dir)
 	max = NULL;
 }
 
-
-void	ft_print_errno(char *dirname)
+void		ft_print_errno(char *dirname)
 {
 	char	*filename;
 	char	*end;

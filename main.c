@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/17 12:15:26 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/17 00:35:41 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/17 23:25:55 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,11 +56,22 @@ void		ft_process_none(t_env *env)
 {
 	while (env->lst_none)
 	{
-		ft_printf("ft_ls: %s: No such file or directory\n",
+		if (EQU(env->lst_none->content, ""))
+		{
+			ft_printf("ft_ls: %s: No such file or directory\n",
+			"fts_open");
+			return ;
+		}
+		else
+			ft_printf("ft_ls: %s: No such file or directory\n",
 			env->lst_none->content);
+
 		env->lst_none = env->lst_none->next;
 		if (!env->lst_none)
-			ft_putchar('\n');
+		{
+			if (env->lst_file || env->lst_dir)
+				ft_putchar('\n');
+		}
 	}
 }
 
@@ -68,7 +79,7 @@ void		ft_process_files(t_env *env)
 {
 	if (env->lst_file)
 	{
-		ft_manage_file(env);
+		ft_manage_file(env, env->lst_file);
 		if (env->lst_dir)
 			ft_putchar('\n');
 	}
@@ -132,8 +143,11 @@ int			main(int ac, char **av)
 	{
 		ft_sort_args(&env, av, i);
 		ft_process_none(&env);
-		ft_process_files(&env);
-		ft_process_dir(&env);
+		if (!env.lst_none)
+		{
+			ft_process_files(&env);
+			ft_process_dir(&env);
+		}
 	}
 	ft_clear_env(&env);
 	return (0);

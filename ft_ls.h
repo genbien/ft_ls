@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/26 15:30:10 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/16 13:02:08 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/17 23:26:12 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,8 @@ void		ft_recur_launcher(DIR *cur_dir, t_env *env, char *directory);
 void		ft_manage_dir(t_env *env, char *directory, DIR *cur_dir, int booh);
 
 
-void		ft_manage_file(t_env *env);
+// void		ft_manage_file(t_env *env);
+void		ft_manage_file(t_env *env, t_list *lst);
 
 /*
 ** Btree_cmp
