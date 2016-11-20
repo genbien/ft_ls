@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/20 14:18:21 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/20 18:54:28 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/20 22:44:38 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,16 +58,22 @@ static void		ft_sort_args_helper(t_env *env, char **av, int i)
 void			ft_sort_args(t_env *env, char **av, int ac)
 {
 	if (ac == 0)
-		ft_lstinsert_args(&env->lst_dir, ".", 1);
+	{
+		if (!env->options->flags['d'])
+			ft_lstinsert_args(&env->lst_dir, ".", 1);
+		else
+			ft_lstinsert_args(&env->lst_file, ".", 1);
+		return ;
+	}
 	while (av[ac])
 	{
 		if (lstat(av[ac], &(env->stats)) == -1)
 			ft_lstinsert_args(&env->lst_none, av[ac], ft_strlen(av[ac]));
 		else
 		{
-			if (S_ISDIR(env->stats.st_mode))
+			if (!env->options->flags['d'] && S_ISDIR(env->stats.st_mode))
 				ft_lstinsert_args(&env->lst_dir, av[ac], ft_strlen(av[ac]));
-			else if (S_ISLNK(env->stats.st_mode))
+			else if (!env->options->flags['d'] && S_ISLNK(env->stats.st_mode))
 				ft_sort_args_helper(env, av, ac);
 			else
 				ft_lstinsert_args(&env->lst_file, av[ac], ft_strlen(av[ac]));

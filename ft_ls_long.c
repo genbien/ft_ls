@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/03 23:27:55 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/20 19:09:24 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/20 22:35:10 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ void		ft_ls_long(t_env env, t_list *list, int is_dir, t_data_max max)
 	}
 	while (list)
 	{
-		if (!env.FLAGS['a'] && EQU(DATA->filename, "."))
+		if (ft_check_access(env, DATA->filename))
 		{
 			list = list->next;
 			continue ;

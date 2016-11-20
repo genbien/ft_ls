@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/20 15:50:53 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/20 19:41:59 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/20 22:36:18 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@ void			ft_init_env(t_env *env)
 	env->directory = NULL;
 	env->dir_fd = NULL;
 	env->dir_content = NULL;
+	env->basedir = NULL;
 	env->blocks = 0;
 }
 
@@ -78,7 +79,7 @@ void	ft_assign_data_max(t_env *env, t_data_max *max)
 {
 	int		value;
 
-	if (!env->FLAGS['a'] && EQU(env->data->filename, "."))
+	if (ft_check_access(*env, env->data->filename))
 		return ;
 	value = ft_strlen(env->data->filename);
 	value > max->max_filename_len ? max->max_filename_len = value : 0;

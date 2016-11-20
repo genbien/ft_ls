@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/02 17:01:37 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/14 15:13:12 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/21 00:18:59 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,15 +133,12 @@ static void		ft_lstinsert_revtm(t_list **list, void *content, size_t c_size)
 
 void			ft_lstinsert_picker(t_env env, t_list **list)
 {
-	if (env.FLAGS['r'] && env.FLAGS['t'])
+	if (env.FLAGS['r'] && (env.FLAGS['t'] || env.FLAGS['U']))
 		ft_lstinsert_revtm(list, env.data, sizeof(t_file_data));
 	else if (env.FLAGS['r'])
 		ft_lstinsert_rev(list, env.data, sizeof(t_file_data));
-	else if (env.FLAGS['t'])
-	{
-		// ft_printf("{10}%s{0} : {11}%ld{0}\n", env.data->filename, env.data->timestamp);
+	else if (env.FLAGS['t'] || env.FLAGS['U'])
 		ft_lstinsert_time(list, env.data, sizeof(t_file_data));
-	}
 	else
 		ft_lstinsert_ascii(list, env.data, sizeof(t_file_data));
 }

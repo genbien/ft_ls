@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/26 15:30:10 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/20 19:41:55 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/20 22:41:15 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,7 @@ typedef struct			s_lslst
 typedef struct			s_env
 {
 	int					args;
+	char				*basedir;
 	char				*directory;
 	DIR					*dir_fd;
 	struct dirent		*dir_content;
@@ -126,10 +127,6 @@ void					ft_free_env(t_env *env);
 /*
 ** ft_extract_part : Extract all the needed datas
 */
-// void					ft_extract_filename(t_env *env, char *dirname);
-// void					ft_extract_type(t_env *env);
-// void					ft_extract_perm(t_env *env);
-// void					ft_extract_attributs(t_env *env);
 void					ft_extract_hard_links(t_env *env);
 void					ft_extract_users_size(t_env *env);
 void					ft_extract_time(t_env *env);
@@ -138,14 +135,14 @@ void					ft_extract_blocks(t_env *env);
 /*
 ** Recur : Start the main thread
 */
-void		ft_recur_launcher(DIR *cur_dir, t_env *env, char *directory);
-void		ft_manage_dir(t_env *env, char *directory, DIR *cur_dir, int booh);
-void		ft_manage_file(t_env *env, t_list *lst);
+void					ft_recur_launcher(DIR *cur_dir, t_env *env, char *directory);
+void					ft_manage_dir(t_env *env, char *directory, DIR *cur_dir, int booh);
+void					ft_manage_file(t_env *env, t_list *lst);
 
 /*
 ** Btree_cmp
 */
-void 		ft_cmp(t_env *env, t_btree **btree, void const *content, size_t c_size);
+void 					ft_cmp(t_env *env, t_btree **btree, void const *content, size_t c_size);
 
 /*
 ** lstinsert : Insert each file in each matching directory_list
@@ -158,6 +155,7 @@ void		ft_lstinsert_picker(t_env env, t_list **list);
 char					*ft_join(char *s1, char *s2, char *divider);
 int						ft_perm_denied(t_env env, char *directory);
 int						ft_donot_continue(t_env env, char *filename);
+int						ft_check_access(t_env env, char *filename);
 
 /*
 ** ft_get_data.c

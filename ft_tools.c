@@ -6,11 +6,12 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/18 16:36:46 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/20 19:32:02 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/20 22:39:47 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
+#define DATA ((t_file_data *)list->content)
 
 char		*ft_join(char *s1, char *s2, char *divider)
 {
@@ -46,4 +47,13 @@ int			ft_donot_continue(t_env env, char *filename)
 	else if (!env.FLAGS['2'] && !env.FLAGS['a'] && filename[0] == '.')
 		return (0);
 	return (1);
+}
+
+int			ft_check_access(t_env env, char *filename)
+{
+	if (env.FLAGS['d'] && EQU(env.basedir, ".") && EQU(filename, "."))
+		return (0);
+	else if (!env.FLAGS['a'] && EQU(filename, "."))
+		return (1);
+	return (0);
 }

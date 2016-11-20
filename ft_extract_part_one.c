@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/18 16:01:18 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/20 19:41:19 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/20 23:17:40 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,22 @@
 
 static void		ft_extract_filename(t_env *env, char *dirname)
 {
+	char	*filename;
+
 	if (dirname == NULL)
-		env->data->filename = ft_strinit(env->dir_content->d_name);
+		filename = ft_strinit(env->dir_content->d_name);
 	else
-		env->data->filename = ft_strinit(dirname);
+		filename = ft_strinit(dirname);
+
+	if (ft_check_access(*env, filename))
+		env->data->filename = ft_strinit(filename);
+	else if (S_ISDIR(env->stats.st_mode) && env->options->flags['p'])
+		env->data->filename = ft_strjoin(filename, "/");
+	else
+		env->data->filename = ft_strinit(filename);
+
+	ft_strdel(&filename);
+
 }
 
 static void		ft_extract_type(t_env *env)
@@ -25,7 +37,7 @@ static void		ft_extract_type(t_env *env)
 	char	*dir;
 
 	dir = ft_strinit(env->directory ? env->directory : env->data->filename);
-	if (!env->FLAGS['a'] && EQU(env->data->filename, "."))
+	if (ft_check_access(*env, env->data->filename))
 	{
 		ft_strdel(&dir);
 		return ;
@@ -47,7 +59,7 @@ static void		ft_extract_type(t_env *env)
 
 static void		ft_extract_perm(t_env *env)
 {
-	if (!env->FLAGS['a'] && EQU(env->data->filename, "."))
+	if (ft_check_access(*env, env->data->filename))
 		return ;
 	env->data->usr_r = env->stats.st_mode & S_IRUSR ? 'r' : '-';
 	env->data->usr_w = env->stats.st_mode & S_IWUSR ? 'w' : '-';
@@ -73,7 +85,7 @@ static void		ft_extract_attributs(t_env *env)
 	ssize_t		xattr;
 
 	dir = ft_strinit(env->directory ? env->directory : env->data->filename);
-	if (!env->FLAGS['a'] && EQU(env->data->filename, "."))
+	if (ft_check_access(*env, env->data->filename))
 	{
 		ft_strdel(&dir);
 		return ;

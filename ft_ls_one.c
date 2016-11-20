@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/19 19:35:33 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/16 12:36:27 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/20 22:30:01 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void		ft_ls_one(t_env env, t_list *list)
 	while (list)
 	{
 		data = ((t_file_data *)list->content);
-		if (!env.FLAGS['a'] && EQU(data->filename, "."))
+		if (ft_check_access(env, data->filename))
 		{
 			list = list->next;
 			continue ;

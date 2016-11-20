@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/18 16:01:18 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/20 19:39:28 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/21 00:16:11 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void		ft_extract_hard_links(t_env *env)
 {
-	if (!env->FLAGS['a'] && EQU(env->data->filename, "."))
+	if (ft_check_access(*env, env->data->filename))
 		return ;
 	env->data->hard_link = env->stats.st_nlink;
 }
@@ -42,8 +42,16 @@ void		ft_extract_time(t_env *env)
 	char		*tmp2;
 	time_t		current_time;
 
-	date = ft_strinit(ctime(&env->stats.st_mtime));
-	env->data->timestamp = env->stats.st_mtime;
+	if (env->FLAGS['U'])
+	{
+		date = ft_strinit(ctime(&env->stats.st_birthtime));
+		env->data->timestamp = env->stats.st_birthtime;
+	}
+	else
+	{
+		date = ft_strinit(ctime(&env->stats.st_mtime));
+		env->data->timestamp = env->stats.st_mtime;
+	}
 	current_time = time(NULL);
 	tmp1 = ft_strsub(date, 4, 3);
 	tmp2 = ft_strsub(date, 8, 2);
@@ -66,7 +74,7 @@ void		ft_extract_time(t_env *env)
 
 void		ft_extract_blocks(t_env *env)
 {
-	if (!env->FLAGS['a'] && EQU(env->data->filename, "."))
+	if (ft_check_access(*env, env->data->filename))
 		return ;
 	env->blocks += env->stats.st_blocks;
 }

@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/17 12:15:26 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/20 20:09:31 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/20 22:54:01 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,11 @@ static void		ft_process_files(t_env *env)
 {
 	if (env->lst_file)
 	{
+		env->basedir = ft_strinit(env->lst_file->content);
 		ft_manage_file(env, env->lst_file);
 		if (env->lst_dir)
 			ft_putchar('\n');
+		ft_strdel(&env->basedir);
 	}
 }
 
@@ -56,6 +58,7 @@ static void		ft_process_dir(t_env *env)
 	{
 		errno = 0;
 		directory = ft_strinit(list->content);
+		env->basedir = ft_strinit(list->content);
 		(env->args >= 2) ? ft_printf("%s:\n", directory) : 0;
 		to_explore = opendir(directory);
 		if (errno != 0)
@@ -66,6 +69,7 @@ static void		ft_process_dir(t_env *env)
 			ft_recur_launcher(opendir(directory), env, directory);
 		}
 		ft_strdel(&directory);
+		ft_strdel(&env->basedir);
 		env->blocks = 0;
 		list = list->next;
 		list ? ft_putchar('\n') : 0;
@@ -84,6 +88,7 @@ int				main(int ac, char **av)
 	if (i == ac)
 	{
 		ft_sort_args(&env, av, 0);
+		ft_process_files(&env);
 		ft_process_dir(&env);
 	}
 	else if (ac - 1 >= 1)
