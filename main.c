@@ -6,53 +6,13 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/17 12:15:26 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/17 23:25:55 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/20 20:09:31 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-static void	ft_extract_options_ls_helper(t_options *options)
-{
-	int		k;
-
-	k = 0;
-	while (k < 122)
-	{
-		options->flags[k] = FALSE;
-		k++;
-	}
-}
-int			ft_extract_options_ls(char **av, t_options *options)
-{
-	int		i;
-	int		j;
-	int		is_one;
-	int		value;
-
-	i = 1;
-	ft_extract_options_ls_helper(options);
-	while (av[i] && av[i][0] == '-')
-	{
-		j = 1;
-		if (av[i][j] == '\0')
-			return (i);
-		while (av[i][j] != '\0')
-		{
-			value = av[i][j];
-			if (value == '-')
-				return (i + 1);
-			is_one == TRUE && value == 'l' ? options->flags['1'] = FALSE : 0;
-			value == '1' ? is_one = TRUE : 0;
-			options->flags[value] = TRUE;
-			j++;
-		}
-		i++;
-	}
-	return (i);
-}
-
-void		ft_process_none(t_env *env)
+static void		ft_process_none(t_env *env)
 {
 	while (env->lst_none)
 	{
@@ -75,7 +35,7 @@ void		ft_process_none(t_env *env)
 	}
 }
 
-void		ft_process_files(t_env *env)
+static void		ft_process_files(t_env *env)
 {
 	if (env->lst_file)
 	{
@@ -85,7 +45,7 @@ void		ft_process_files(t_env *env)
 	}
 }
 
-void		ft_process_dir(t_env *env)
+static void		ft_process_dir(t_env *env)
 {
 	DIR		*to_explore;
 	char	*directory;
@@ -106,33 +66,20 @@ void		ft_process_dir(t_env *env)
 			ft_recur_launcher(opendir(directory), env, directory);
 		}
 		ft_strdel(&directory);
-
-		//NEED TO RESET THE O_LIST + THE BLOCK
 		env->blocks = 0;
 		list = list->next;
 		list ? ft_putchar('\n') : 0;
 	}
 }
 
-
-void		ft_clear_env(t_env *env)
-{
-	free(env->options);
-	free(env->data);
-	ft_lstclr(&env->lst_dir);
-	ft_lstclr(&env->lst_file);
-	ft_lstclr(&env->lst_none);
-	ft_lstclr(&env->lst);
-}
-
-int			main(int ac, char **av)
+int				main(int ac, char **av)
 {
 	t_env	env;
 	int		i;
 
 	ft_init_env(&env);
 	env.options = (t_options *)malloc(sizeof(t_options));
-	i = ft_extract_options_ls(av, env.options);
+	i = ft_extract_options_ls(av, &env);
 	env.args = ac - i;
 	if (i == ac)
 	{
@@ -149,6 +96,6 @@ int			main(int ac, char **av)
 			ft_process_dir(&env);
 		}
 	}
-	ft_clear_env(&env);
-	return (0);
+	ft_free_env(&env);
+	return (1);
 }

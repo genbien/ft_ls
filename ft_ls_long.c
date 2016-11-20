@@ -6,11 +6,12 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/03 23:27:55 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/16 12:59:57 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/20 19:09:24 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
+#define DATA ((t_file_data *)list->content)
 
 static void		ft_print_part_1(t_file_data *data)
 {
@@ -30,32 +31,31 @@ static void		ft_print_part_2(t_file_data *data, t_data_max max)
 		ft_printf("%*d ", max.max_size_len, data->size);
 	else if (data->type == 'c' || data->type == 'b')
 	{
-		ft_printf("%*d, ", max.max_major_len + 1, data->major);
-		ft_printf("%*d ", max.max_minor_len, data->minor);
+		ft_printf("%*ld, ", max.max_major_len + 1, data->major);
+		ft_printf("%*ld ", max.max_minor_len, data->minor);
 	}
 	else
-		ft_printf("%*d", max.max_minor_len + max.max_major_len + 3, data->size);
+		ft_printf("%*d ", max.max_minor_len + max.max_major_len + 3, data->size);
 	ft_printf("%s %5s ", data->time_day, data->time_hour);
 }
 
 void		ft_ls_long(t_env env, t_list *list, int is_dir, t_data_max max)
 {
-	t_file_data	*data;
-
 	if (is_dir)
-		ft_printf("total %d\n", env.blocks);
+	{
+		if (!(!env.FLAGS['a'] && EQU(DATA->filename, ".") && !list->next))
+			ft_printf("total %d\n", env.blocks);
+	}
 	while (list)
 	{
-		data = ((t_file_data *)list->content);
-		if (!env.FLAGS['a'] && EQU(data->filename, "."))
+		if (!env.FLAGS['a'] && EQU(DATA->filename, "."))
 		{
 			list = list->next;
 			continue ;
 		}
-		ft_print_part_1(data);
-		ft_print_part_2(data, max);
-
-		ft_print_color(env, data);
+		ft_print_part_1(DATA);
+		ft_print_part_2(DATA, max);
+		ft_print_color(env, DATA);
 		ft_putchar('\n');
 		list = list->next;
 	}

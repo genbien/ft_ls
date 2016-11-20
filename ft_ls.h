@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/26 15:30:10 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/17 23:26:12 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/20 19:41:55 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,8 +63,8 @@ typedef struct			s_file_data
 	char				*time_day;
 	char				*time_hour;
 	long 				timestamp;
-	int					major;
-	int					minor;
+	long				major;
+	long				minor;
 }						t_file_data;
 
 typedef struct			s_data_max
@@ -112,15 +112,34 @@ typedef struct			s_env
 	int					blocks;
 }						t_env;
 
+/*
+** ft_init.c && ft_free.c
+*/
+void					ft_init_data(t_env *env);
+void					ft_init_env(t_env *env);
+void					ft_init_data_max(t_data_max *max);
+void					ft_free_data(t_file_data *data);
+void					ft_free_list(t_list **begin_list);
+void					ft_free_env(t_env *env);
+
+
+/*
+** ft_extract_part : Extract all the needed datas
+*/
+// void					ft_extract_filename(t_env *env, char *dirname);
+// void					ft_extract_type(t_env *env);
+// void					ft_extract_perm(t_env *env);
+// void					ft_extract_attributs(t_env *env);
+void					ft_extract_hard_links(t_env *env);
+void					ft_extract_users_size(t_env *env);
+void					ft_extract_time(t_env *env);
+void					ft_extract_blocks(t_env *env);
 
 /*
 ** Recur : Start the main thread
 */
 void		ft_recur_launcher(DIR *cur_dir, t_env *env, char *directory);
 void		ft_manage_dir(t_env *env, char *directory, DIR *cur_dir, int booh);
-
-
-// void		ft_manage_file(t_env *env);
 void		ft_manage_file(t_env *env, t_list *lst);
 
 /*
@@ -134,25 +153,18 @@ void 		ft_cmp(t_env *env, t_btree **btree, void const *content, size_t c_size);
 void		ft_lstinsert_picker(t_env env, t_list **list);
 
 /*
-** extract_part : Extract all the needed datas
+** ft_tools.c
 */
-void		ft_extract_filename(t_env *env, char *dirname);
-void		ft_extract_type(t_env *env);
-void		ft_extract_perm(t_env *env);
-void		ft_extract_attributs(t_env *env);
-void		ft_extract_hard_links(t_env *env);
-void		ft_extract_users(t_env *env);
-void		ft_extract_size(t_env *env);
-void		ft_extract_time(t_env *env);
-void		ft_extract_blocks(t_env *env);
-
-/*
-** tools : Various tools
-*/
-t_list					*ft_lstinsert(void const *content, size_t c_size, t_list *next);
 char					*ft_join(char *s1, char *s2, char *divider);
 int						ft_perm_denied(t_env env, char *directory);
 int						ft_donot_continue(t_env env, char *filename);
+
+/*
+** ft_get_data.c
+*/
+void					ft_extract_data(t_env *env, char *filename);
+void					ft_assign_data_max(t_env *env, t_data_max *max);
+
 
 /*
 ** PRINT
@@ -174,11 +186,6 @@ void					ft_ls_long(t_env env, t_list *list, int is_dir, t_data_max max);
 ** ARGS
 */
 void					ft_sort_args(t_env *env, char **av, int ac);
-
-/*
-** INIT
-*/
-void					ft_init_env(t_env *env);
-void					ft_init_data(t_env *env);
+int						ft_extract_options_ls(char **av, t_env *env);
 
 #endif

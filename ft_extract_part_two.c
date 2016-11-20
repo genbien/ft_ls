@@ -6,20 +6,23 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/18 16:01:18 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/16 13:03:46 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/20 19:39:28 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-void		ft_extract_users(t_env *env)
+void		ft_extract_hard_links(t_env *env)
+{
+	if (!env->FLAGS['a'] && EQU(env->data->filename, "."))
+		return ;
+	env->data->hard_link = env->stats.st_nlink;
+}
+
+void		ft_extract_users_size(t_env *env)
 {
 	env->data->owner = ft_strinit(getpwuid(env->stats.st_uid)->pw_name);
 	env->data->group = ft_strinit(getgrgid(env->stats.st_gid)->gr_name);
-}
-
-void		ft_extract_size(t_env *env)
-{
 	env->data->size = env->stats.st_size;
 }
 
@@ -31,7 +34,6 @@ void		ft_extract_time_helper(t_env *env, char *date)
 	env->data->time_hour = ft_strjoin(" ", tmp);
 	ft_strdel(&tmp);
 }
-
 
 void		ft_extract_time(t_env *env)
 {
@@ -64,5 +66,7 @@ void		ft_extract_time(t_env *env)
 
 void		ft_extract_blocks(t_env *env)
 {
+	if (!env->FLAGS['a'] && EQU(env->data->filename, "."))
+		return ;
 	env->blocks += env->stats.st_blocks;
 }

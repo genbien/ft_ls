@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/20 12:10:14 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/17 11:50:18 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/20 20:02:57 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,6 @@ void		ft_print_errno(char *dirname)
 	}
 	else
 		filename = ft_strinit(dirname);
-	// ft_printf("{10}%s{0}:\n", dirname);
 	ft_printf("ft_ls: %s: %s\n", filename, strerror(errno));
 	ft_strdel(&filename);
 }

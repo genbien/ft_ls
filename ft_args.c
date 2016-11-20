@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/20 14:18:21 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/17 23:30:20 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/20 18:54:28 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,36 +41,93 @@ static void		ft_lstinsert_args(t_list **list, void *content, size_t c_size)
 		*list = ft_lstnew(content, c_size);
 }
 
-void			ft_sort_args(t_env *env, char **av, int ac)
+static void		ft_sort_args_helper(t_env *env, char **av, int i)
 {
-	int		i;
 	char	*str;
 
-	i = ac;
-	if (i == 0)
+	str = ft_strnew(PATH_MAX);
+	readlink(av[i], str, PATH_MAX);
+	lstat(str, &(env->stats));
+	if (S_ISDIR(env->stats.st_mode))
+		ft_lstinsert_args(&env->lst_dir, av[i], ft_strlen(av[i]));
+	else
+		ft_lstinsert_args(&env->lst_file, av[i], ft_strlen(av[i]));
+	ft_strdel(&str);
+}
+
+void			ft_sort_args(t_env *env, char **av, int ac)
+{
+	if (ac == 0)
 		ft_lstinsert_args(&env->lst_dir, ".", 1);
-	while (av[i])
+	while (av[ac])
 	{
-		if (lstat(av[i], &(env->stats)) == -1)
-			ft_lstinsert_args(&env->lst_none, av[i], ft_strlen(av[i]));
+		if (lstat(av[ac], &(env->stats)) == -1)
+			ft_lstinsert_args(&env->lst_none, av[ac], ft_strlen(av[ac]));
 		else
 		{
 			if (S_ISDIR(env->stats.st_mode))
-				ft_lstinsert_args(&env->lst_dir, av[i], ft_strlen(av[i]));
+				ft_lstinsert_args(&env->lst_dir, av[ac], ft_strlen(av[ac]));
 			else if (S_ISLNK(env->stats.st_mode))
-			{
-				str = ft_strnew(PATH_MAX);
-				readlink(av[i], str, PATH_MAX);
-				lstat(str, &(env->stats));
-				if (S_ISDIR(env->stats.st_mode))
-					ft_lstinsert_args(&env->lst_dir, av[i], ft_strlen(av[i]));
-				else
-					ft_lstinsert_args(&env->lst_file, av[i], ft_strlen(av[i]));
-				ft_strdel(&str);
-			}
+				ft_sort_args_helper(env, av, ac);
 			else
-				ft_lstinsert_args(&env->lst_file, av[i], ft_strlen(av[i]));
+				ft_lstinsert_args(&env->lst_file, av[ac], ft_strlen(av[ac]));
+		}
+		ac++;
+	}
+}
+
+static int		ft_handle_errors(t_env *env, int value)
+{
+	int		ret;
+
+	ret = 0;
+	if (value <= 32)
+		ret = 0;
+	else if (value <= 47)
+		ret = -1;
+	else if (value <= 57)
+		ret = 1;
+	else if (value <= 64)
+		ret = -1;
+	else if (value <= 90)
+		ret = 1;
+	else if (value <= 96)
+		ret = -1;
+	else if (value <= 122)
+		ret = 1;
+	if (ret == -1)
+	{
+		ft_printf("./ft_ls: illegal option -- %c\n", value);
+		ft_free_env(env);
+		exit(1);
+	}
+	return (ret);
+}
+
+int				ft_extract_options_ls(char **av, t_env *env)
+{
+	int		i;
+	int		j;
+	int		is_one;
+
+	i = 1;
+	ft_nbrinit(env->options->flags, 122);
+	while (av[i] && av[i][0] == '-' && av[i][1] != '\0')
+	{
+		j = 1;
+		while (av[i][j] != '\0')
+		{
+			if (av[i][j] == '-')
+				return (i + 1);
+			if (ft_handle_errors(env, av[i][j]) == 1)
+			{
+				is_one && av[i][j] == 'l' ? env->options->flags['1'] = 0 : 0;
+				av[i][j] == '1' ? is_one = TRUE : 0;
+				env->options->flags[(int)av[i][j]] = TRUE;
+			}
+			j++;
 		}
 		i++;
 	}
+	return (i);
 }

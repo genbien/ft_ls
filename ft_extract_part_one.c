@@ -6,13 +6,13 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/18 16:01:18 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/16 11:47:35 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/20 19:41:19 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-void		ft_extract_filename(t_env *env, char *dirname)
+static void		ft_extract_filename(t_env *env, char *dirname)
 {
 	if (dirname == NULL)
 		env->data->filename = ft_strinit(env->dir_content->d_name);
@@ -20,7 +20,7 @@ void		ft_extract_filename(t_env *env, char *dirname)
 		env->data->filename = ft_strinit(dirname);
 }
 
-void		ft_extract_type(t_env *env)
+static void		ft_extract_type(t_env *env)
 {
 	char	*dir;
 
@@ -45,7 +45,7 @@ void		ft_extract_type(t_env *env)
 	ft_strdel(&dir);
 }
 
-void		ft_extract_perm(t_env *env)
+static void		ft_extract_perm(t_env *env)
 {
 	if (!env->FLAGS['a'] && EQU(env->data->filename, "."))
 		return ;
@@ -66,7 +66,7 @@ void		ft_extract_perm(t_env *env)
 		env->data->oth_x = env->stats.st_mode & S_IXOTH ? 't' : 'T';
 }
 
-void		ft_extract_attributs(t_env *env)
+static void		ft_extract_attributs(t_env *env)
 {
 	char	*dir;
 	acl_t		acl;
@@ -89,9 +89,17 @@ void		ft_extract_attributs(t_env *env)
 	ft_strdel(&dir);
 }
 
-void		ft_extract_hard_links(t_env *env)
+void			ft_extract_data(t_env *env, char *filename)
 {
-	if (!env->FLAGS['a'] && EQU(env->data->filename, "."))
-		return ;
-	env->data->hard_link = env->stats.st_nlink;
+	ft_init_data(env);
+	ft_extract_filename(env, filename);
+	ft_extract_type(env);
+	ft_extract_perm(env);
+	ft_extract_time(env);
+	env->FLAGS['l'] ? ft_extract_attributs(env) : 0;
+	env->FLAGS['l'] ? ft_extract_hard_links(env) : 0;
+	env->FLAGS['l'] ? ft_extract_users_size(env) : 0;
+	env->FLAGS['l'] ? ft_extract_blocks(env) : 0;
+	env->data->major = major(env->stats.st_rdev);
+	env->data->minor = minor(env->stats.st_rdev);
 }
