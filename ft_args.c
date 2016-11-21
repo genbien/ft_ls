@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/20 14:18:21 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/21 13:20:08 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/21 13:32:32 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,9 +38,7 @@ static void		ft_lstinsert_args(t_list **list, void *content, size_t c_size)
 			new_list->next = ft_lstnew(content, c_size);
 	}
 	else
-	{
 		*list = ft_lstnew(content, c_size);
-	}
 }
 
 static void		ft_sort_args_helper(t_env *env, char **av, int i)
