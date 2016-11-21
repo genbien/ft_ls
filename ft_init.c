@@ -6,23 +6,11 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/20 15:50:53 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/20 22:36:18 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/21 13:27:43 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
-
-static void		ft_init_lst(t_env *env)
-{
-	(!(env->lst = (t_list *)malloc(sizeof(t_list)))) ? exit(1) : 0;
-	(!(env->lst_dir = (t_list *)malloc(sizeof(t_list)))) ? exit(1) : 0;
-	(!(env->lst_file = (t_list *)malloc(sizeof(t_list)))) ? exit(1) : 0;
-	(!(env->lst_none = (t_list *)malloc(sizeof(t_list)))) ? exit(1) : 0;
-	env->lst = NULL;
-	env->lst_dir = NULL;
-	env->lst_file = NULL;
-	env->lst_none = NULL;
-}
 
 void			ft_init_data(t_env *env)
 {
@@ -54,7 +42,10 @@ void			ft_init_data(t_env *env)
 void			ft_init_env(t_env *env)
 {
 	(!(env->data = (t_file_data *)malloc(sizeof(t_file_data)))) ? exit(1) : 0;
-	ft_init_lst(env);
+	env->lst = NULL;
+	env->lst_dir = NULL;
+	env->lst_file = NULL;
+	env->lst_none = NULL;
 	env->args = 0;
 	env->directory = NULL;
 	env->dir_fd = NULL;
@@ -75,7 +66,7 @@ void			ft_init_data_max(t_data_max *max)
 	max->nb_file = 0;
 }
 
-void	ft_assign_data_max(t_env *env, t_data_max *max)
+void			ft_assign_data_max(t_env *env, t_data_max *max)
 {
 	int		value;
 

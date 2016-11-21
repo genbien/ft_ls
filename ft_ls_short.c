@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/19 19:35:33 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/16 12:24:55 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/21 11:42:35 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,11 @@
 static t_file_data	**ft_short_helper(t_list *lst, size_t size, int is_a)
 {
 	t_file_data		**buffer;
-	size_t		i;
+	size_t			i;
 
 	buffer = NULL;
 	if (!(buffer = (t_file_data **)malloc(sizeof(t_file_data *) * (size + 1))))
 		return (NULL);
-
 	i = 0;
 	while (i < size && lst)
 	{
@@ -29,7 +28,6 @@ static t_file_data	**ft_short_helper(t_list *lst, size_t size, int is_a)
 			lst = lst->next;
 			continue;
 		}
-		buffer[i] = (t_file_data *)malloc(sizeof(t_file_data));
 		buffer[i] = (t_file_data *)lst->content;
 		i++;
 		lst = lst->next;
@@ -71,7 +69,10 @@ static void			ft_print_short(t_env e, t_data_max max, t_list *lst, int l)
 	while (i < l)
 	{
 		if (all_data && all_data[x])
+		{
 			ft_print_color_len(e, all_data[x], max.max_filename_len);
+			ft_free_data(all_data[x]);
+		}
 		x += l;
 		if (x >= max.nb_file)
 		{
@@ -80,6 +81,7 @@ static void			ft_print_short(t_env e, t_data_max max, t_list *lst, int l)
 			x = i;
 		}
 	}
+	free(all_data);
 }
 
 void				ft_ls_short(t_env env, t_list *list, t_data_max max)
@@ -94,7 +96,4 @@ void				ft_ls_short(t_env env, t_list *list, t_data_max max)
 	nb_column == 0 ? nb_column = 1 : 0;
 	elem_line = max.nb_file / nb_column + ((max.nb_file % nb_column) ? 1 : 0);
 	ft_print_short(env, max, list, elem_line);
-	// if (max.nb_file == 1)
-		// ft_printf("\n");
-
 }

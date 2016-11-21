@@ -6,47 +6,47 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/13 19:22:32 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/21 00:19:06 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/21 09:55:12 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-static void ft_btreecmp_revtime(t_btree **tree, void const *content,
-			size_t c_size, long timestamp)
+static void	ft_btreecmp_revtime(t_btree **tree, void const *content,
+	size_t c_size, long timestamp)
 {
 	struct stat			stats;
 
-    if (!(*tree))
+	if (!(*tree))
 		(*tree) = ft_btreenew(content, c_size);
 	else
 	{
 		lstat((char *)(*tree)->content, &(stats));
-	    if (timestamp < stats.st_mtime)
-	        ft_btreecmp_revtime(&(*tree)->left, content, c_size, timestamp);
+		if (timestamp < stats.st_mtime)
+			ft_btreecmp_revtime(&(*tree)->left, content, c_size, timestamp);
 		else if (timestamp >= stats.st_mtime)
-	        ft_btreecmp_revtime(&(*tree)->right, content, c_size, timestamp);
+			ft_btreecmp_revtime(&(*tree)->right, content, c_size, timestamp);
 	}
 }
 
-static void ft_btreecmp_time(t_btree **tree, void const *content,
-			size_t c_size, long timestamp)
+static void	ft_btreecmp_time(t_btree **tree, void const *content,
+	size_t c_size, long timestamp)
 {
 	struct stat			stats;
 
-    if (!(*tree))
+	if (!(*tree))
 		(*tree) = ft_btreenew(content, c_size);
 	else
 	{
 		lstat((char *)(*tree)->content, &(stats));
-	    if (timestamp > stats.st_mtime)
-	        ft_btreecmp_time(&(*tree)->left, content, c_size, timestamp);
+		if (timestamp > stats.st_mtime)
+			ft_btreecmp_time(&(*tree)->left, content, c_size, timestamp);
 		else if (timestamp <= stats.st_mtime)
-	        ft_btreecmp_time(&(*tree)->right, content, c_size, timestamp);
+			ft_btreecmp_time(&(*tree)->right, content, c_size, timestamp);
 	}
 }
 
-void 		ft_cmp(t_env *env, t_btree **btree, void const *content,
+void		ft_cmp(t_env *env, t_btree **btree, void const *content,
 			size_t c_size)
 {
 	if (env->FLAGS['r'] && (env->FLAGS['t'] || env->FLAGS['U']))

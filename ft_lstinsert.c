@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/02 17:01:37 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/21 00:18:59 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/21 10:26:46 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,29 @@
 #define DATA_NNL	((t_file_data *)new_list->next->content)
 #define DATA_CU		((t_file_data *)content)
 
-static void		ft_lstinsert_ascii(t_list **list, void *content, size_t c_size)
+static void		ft_insert_timeh(t_list *new_list, void *content, size_t c_size)
+{
+	while (new_list->next)
+	{
+		if (DATA_NNL->timestamp < DATA_CU->timestamp)
+		{
+			new_list->next = ft_lstinsert(content, c_size, new_list->next);
+			return ;
+		}
+		if (DATA_NNL->timestamp == DATA_CU->timestamp)
+		{
+			if (CMP(DATA_NNL->filename, DATA_CU->filename) > 0)
+			{
+				new_list->next = ft_lstinsert(content, c_size, new_list->next);
+				return ;
+			}
+		}
+		new_list = new_list->next;
+	}
+	new_list->next = ft_lstnew(content, c_size);
+}
+
+void			ft_lstinsert_ascii(t_list **list, void *content, size_t c_size)
 {
 	t_list	*new_list;
 
@@ -39,51 +61,27 @@ static void		ft_lstinsert_ascii(t_list **list, void *content, size_t c_size)
 		*list = ft_lstnew(content, c_size);
 }
 
-static void		ft_lstinsert_time(t_list **list, void *content, size_t c_size)
+void			ft_lstinsert_time(t_list **list, void *content, size_t c_size)
 {
-	//IF TIME EQU, ON TEST ASCII
 	t_list	*new_list;
 
 	new_list = *list;
 	if (new_list && DATA_NL->timestamp <= DATA_CU->timestamp)
 	{
-		if (DATA_NL->timestamp < DATA_CU->timestamp)
-		{
-			*list = ft_lstinsert(content, c_size, new_list);
-			return ;
-		}
-		if (CMP(DATA_NL->filename, DATA_CU->filename) > 0)
+		if ((DATA_NL->timestamp < DATA_CU->timestamp) ||
+			CMP(DATA_NL->filename, DATA_CU->filename) > 0)
 		{
 			*list = ft_lstinsert(content, c_size, new_list);
 			return ;
 		}
 	}
 	if (new_list)
-	{
-		while (new_list->next)
-		{
-			if (DATA_NNL->timestamp < DATA_CU->timestamp)
-			{
-				new_list->next = ft_lstinsert(content, c_size, new_list->next);
-				return ;
-			}
-			if (DATA_NNL->timestamp == DATA_CU->timestamp)
-			{
-				if (CMP(DATA_NNL->filename, DATA_CU->filename) > 0)
-				{
-					new_list->next = ft_lstinsert(content, c_size, new_list->next);
-					return ;
-				}
-			}
-			new_list = new_list->next;
-		}
-		new_list->next = ft_lstnew(content, c_size);
-	}
+		ft_insert_timeh(new_list, content, c_size);
 	else
 		*list = ft_lstnew(content, c_size);
 }
 
-static void		ft_lstinsert_rev(t_list **list, void *content, size_t c_size)
+void			ft_lstinsert_rev(t_list **list, void *content, size_t c_size)
 {
 	t_list	*new_list;
 
@@ -107,7 +105,7 @@ static void		ft_lstinsert_rev(t_list **list, void *content, size_t c_size)
 		*list = ft_lstnew(content, c_size);
 }
 
-static void		ft_lstinsert_revtm(t_list **list, void *content, size_t c_size)
+void			ft_lstinsert_revtm(t_list **list, void *content, size_t c_size)
 {
 	t_list	*new_list;
 
@@ -129,16 +127,4 @@ static void		ft_lstinsert_revtm(t_list **list, void *content, size_t c_size)
 	}
 	else
 		*list = ft_lstnew(content, c_size);
-}
-
-void			ft_lstinsert_picker(t_env env, t_list **list)
-{
-	if (env.FLAGS['r'] && (env.FLAGS['t'] || env.FLAGS['U']))
-		ft_lstinsert_revtm(list, env.data, sizeof(t_file_data));
-	else if (env.FLAGS['r'])
-		ft_lstinsert_rev(list, env.data, sizeof(t_file_data));
-	else if (env.FLAGS['t'] || env.FLAGS['U'])
-		ft_lstinsert_time(list, env.data, sizeof(t_file_data));
-	else
-		ft_lstinsert_ascii(list, env.data, sizeof(t_file_data));
 }

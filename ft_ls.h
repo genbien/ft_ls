@@ -6,13 +6,12 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/26 15:30:10 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/20 22:41:15 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/21 11:21:41 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FT_LS_H
 # define FT_LS_H
-
 
 # include <sys/stat.h>
 # include <sys/types.h>
@@ -26,9 +25,9 @@
 # include <errno.h>
 
 # include <sys/xattr.h>
-# include <sys/acl.h> //BONUS ACL
-# include <sys/ioctl.h> //BONUS affichage colones
-# include <termios.h> //BONUS affichage colones
+# include <sys/acl.h>
+# include <sys/ioctl.h>
+# include <termios.h>
 
 # include "libft/libft.h"
 
@@ -62,7 +61,7 @@ typedef struct			s_file_data
 	char				*time;
 	char				*time_day;
 	char				*time_hour;
-	long 				timestamp;
+	long				timestamp;
 	long				major;
 	long				minor;
 }						t_file_data;
@@ -123,7 +122,6 @@ void					ft_free_data(t_file_data *data);
 void					ft_free_list(t_list **begin_list);
 void					ft_free_env(t_env *env);
 
-
 /*
 ** ft_extract_part : Extract all the needed datas
 */
@@ -135,19 +133,32 @@ void					ft_extract_blocks(t_env *env);
 /*
 ** Recur : Start the main thread
 */
-void					ft_recur_launcher(DIR *cur_dir, t_env *env, char *directory);
-void					ft_manage_dir(t_env *env, char *directory, DIR *cur_dir, int booh);
+void					ft_recur_launcher(DIR *cur_dir, t_env *env,
+						char *directory);
+void					ft_manage_dir(t_env *env, char *directory, DIR *cur_dir,
+						int booh);
 void					ft_manage_file(t_env *env, t_list *lst);
+void					ft_recur_helper(t_env *env, t_list **list,
+						t_data_max *data_max);
 
 /*
 ** Btree_cmp
 */
-void 					ft_cmp(t_env *env, t_btree **btree, void const *content, size_t c_size);
+void					ft_cmp(t_env *env, t_btree **btree, void const *content,
+						size_t c_size);
 
 /*
 ** lstinsert : Insert each file in each matching directory_list
 */
-void		ft_lstinsert_picker(t_env env, t_list **list);
+void					ft_lstinsert_picker(t_env env, t_list **list);
+void					ft_lstinsert_ascii(t_list **list, void *content,
+						size_t c_size);
+void					ft_lstinsert_time(t_list **list, void *content,
+						size_t c_size);
+void					ft_lstinsert_rev(t_list **list, void *content,
+						size_t c_size);
+void					ft_lstinsert_revtm(t_list **list, void *content,
+						size_t c_size);
 
 /*
 ** ft_tools.c
@@ -163,22 +174,22 @@ int						ft_check_access(t_env env, char *filename);
 void					ft_extract_data(t_env *env, char *filename);
 void					ft_assign_data_max(t_env *env, t_data_max *max);
 
-
 /*
 ** PRINT
 */
 int						ft_print_perm_denied(t_env env, char *directory);
 void					ft_print_color(t_env env, t_file_data *data);
-void					ft_print_ls(t_env *env, t_list *list, t_data_max *max, int is_dir);
+void					ft_print_ls(t_env *env, t_list *list, t_data_max *max,
+						int is_dir);
 void					ft_print_errno(char *dirname);
-
 
 /*
 ** SIMPLE
 */
 void					ft_ls_short(t_env env, t_list *list, t_data_max max);
 void					ft_ls_one(t_env env, t_list *list);
-void					ft_ls_long(t_env env, t_list *list, int is_dir, t_data_max max);
+void					ft_ls_long(t_env env, t_list *list, int is_dir,
+						t_data_max max);
 
 /*
 ** ARGS

@@ -6,29 +6,16 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/18 16:36:46 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/20 22:39:47 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/21 11:21:26 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 #define DATA ((t_file_data *)list->content)
 
-char		*ft_join(char *s1, char *s2, char *divider)
-{
-	char	*str;
-
-	if (s1[ft_strlen(s1) - 1] == '/' && EQU(divider, "/"))
-		divider = "";
-	str = ft_strnew(ft_strlen(s1) + ft_strlen(s2) + 1);
-	ft_strcpy(str, s1);
-	ft_strcat(str, divider);
-	ft_strcat(str, s2);
-	return (str);
-}
-
 int			ft_perm_denied(t_env env, char *directory)
 {
-	mode_t    mode;
+	mode_t	mode;
 
 	mode = env.stats.st_mode;
 	if (EQU(directory, ".."))
@@ -56,4 +43,23 @@ int			ft_check_access(t_env env, char *filename)
 	else if (!env.FLAGS['a'] && EQU(filename, "."))
 		return (1);
 	return (0);
+}
+
+void		ft_lstinsert_picker(t_env env, t_list **list)
+{
+	if (env.FLAGS['r'] && (env.FLAGS['t'] || env.FLAGS['U']))
+		ft_lstinsert_revtm(list, env.data, sizeof(t_file_data));
+	else if (env.FLAGS['r'])
+		ft_lstinsert_rev(list, env.data, sizeof(t_file_data));
+	else if (env.FLAGS['t'] || env.FLAGS['U'])
+		ft_lstinsert_time(list, env.data, sizeof(t_file_data));
+	else
+		ft_lstinsert_ascii(list, env.data, sizeof(t_file_data));
+}
+
+void		ft_recur_helper(t_env *env, t_list **list, t_data_max *data_max)
+{
+	ft_extract_data(env, FILENAME);
+	ft_lstinsert_picker(*env, list);
+	ft_assign_data_max(env, data_max);
 }

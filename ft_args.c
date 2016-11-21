@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/20 14:18:21 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/20 22:44:38 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/21 13:20:08 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,9 @@ static void		ft_lstinsert_args(t_list **list, void *content, size_t c_size)
 			new_list->next = ft_lstnew(content, c_size);
 	}
 	else
+	{
 		*list = ft_lstnew(content, c_size);
+	}
 }
 
 static void		ft_sort_args_helper(t_env *env, char **av, int i)
@@ -59,7 +61,7 @@ void			ft_sort_args(t_env *env, char **av, int ac)
 {
 	if (ac == 0)
 	{
-		if (!env->options->flags['d'])
+		if (!env->FLAGS['d'])
 			ft_lstinsert_args(&env->lst_dir, ".", 1);
 		else
 			ft_lstinsert_args(&env->lst_file, ".", 1);
@@ -71,9 +73,9 @@ void			ft_sort_args(t_env *env, char **av, int ac)
 			ft_lstinsert_args(&env->lst_none, av[ac], ft_strlen(av[ac]));
 		else
 		{
-			if (!env->options->flags['d'] && S_ISDIR(env->stats.st_mode))
+			if (!env->FLAGS['d'] && S_ISDIR(env->stats.st_mode))
 				ft_lstinsert_args(&env->lst_dir, av[ac], ft_strlen(av[ac]));
-			else if (!env->options->flags['d'] && S_ISLNK(env->stats.st_mode))
+			else if (!env->FLAGS['d'] && S_ISLNK(env->stats.st_mode))
 				ft_sort_args_helper(env, av, ac);
 			else
 				ft_lstinsert_args(&env->lst_file, av[ac], ft_strlen(av[ac]));
@@ -117,7 +119,7 @@ int				ft_extract_options_ls(char **av, t_env *env)
 	int		is_one;
 
 	i = 1;
-	ft_nbrinit(env->options->flags, 122);
+	ft_nbrinit(env->FLAGS, 121);
 	while (av[i] && av[i][0] == '-' && av[i][1] != '\0')
 	{
 		j = 1;
@@ -127,9 +129,9 @@ int				ft_extract_options_ls(char **av, t_env *env)
 				return (i + 1);
 			if (ft_handle_errors(env, av[i][j]) == 1)
 			{
-				is_one && av[i][j] == 'l' ? env->options->flags['1'] = 0 : 0;
+				is_one && av[i][j] == 'l' ? env->FLAGS['1'] = 0 : 0;
 				av[i][j] == '1' ? is_one = TRUE : 0;
-				env->options->flags[(int)av[i][j]] = TRUE;
+				env->FLAGS[(int)av[i][j]] = TRUE;
 			}
 			j++;
 		}

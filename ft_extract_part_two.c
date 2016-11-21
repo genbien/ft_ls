@@ -6,11 +6,15 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/18 16:01:18 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/21 00:16:11 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/21 10:09:06 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
+#define INITBIRTH ft_strinit(ctime(&env->stats.st_birthtime))
+#define INITLAST ft_strinit(ctime(&env->stats.st_mtime))
+#define BIRTHTIME env->stats.st_birthtime
+#define LASTIME env->stats.st_mtime
 
 void		ft_extract_hard_links(t_env *env)
 {
@@ -42,16 +46,8 @@ void		ft_extract_time(t_env *env)
 	char		*tmp2;
 	time_t		current_time;
 
-	if (env->FLAGS['U'])
-	{
-		date = ft_strinit(ctime(&env->stats.st_birthtime));
-		env->data->timestamp = env->stats.st_birthtime;
-	}
-	else
-	{
-		date = ft_strinit(ctime(&env->stats.st_mtime));
-		env->data->timestamp = env->stats.st_mtime;
-	}
+	date = env->FLAGS['U'] ? INITBIRTH : INITLAST;
+	env->data->timestamp = env->FLAGS['U'] ? BIRTHTIME : LASTIME;
 	current_time = time(NULL);
 	tmp1 = ft_strsub(date, 4, 3);
 	tmp2 = ft_strsub(date, 8, 2);

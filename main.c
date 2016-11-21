@@ -6,11 +6,32 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/17 12:15:26 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/20 22:54:01 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/21 13:29:12 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
+
+/*
+** Bonus :
+** -G
+** -1
+** -d
+** -U
+*/
+
+char			*ft_join(char *s1, char *s2, char *divider)
+{
+	char	*str;
+
+	if (s1[ft_strlen(s1) - 1] == '/' && EQU(divider, "/"))
+		divider = "";
+	str = ft_strnew(ft_strlen(s1) + ft_strlen(s2) + 1);
+	ft_strcpy(str, s1);
+	ft_strcat(str, divider);
+	ft_strcat(str, s2);
+	return (str);
+}
 
 static void		ft_process_none(t_env *env)
 {
@@ -25,7 +46,6 @@ static void		ft_process_none(t_env *env)
 		else
 			ft_printf("ft_ls: %s: No such file or directory\n",
 			env->lst_none->content);
-
 		env->lst_none = env->lst_none->next;
 		if (!env->lst_none)
 		{
@@ -60,19 +80,20 @@ static void		ft_process_dir(t_env *env)
 		directory = ft_strinit(list->content);
 		env->basedir = ft_strinit(list->content);
 		(env->args >= 2) ? ft_printf("%s:\n", directory) : 0;
-		to_explore = opendir(directory);
-		if (errno != 0)
+		if ((to_explore = opendir(directory)) && errno != 0)
 			ft_print_errno(directory);
 		else
 		{
 			ft_manage_dir(env, directory, opendir(directory), 0);
 			ft_recur_launcher(opendir(directory), env, directory);
 		}
+		closedir(to_explore);
 		ft_strdel(&directory);
 		ft_strdel(&env->basedir);
 		env->blocks = 0;
 		list = list->next;
 		list ? ft_putchar('\n') : 0;
+
 	}
 }
 

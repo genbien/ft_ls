@@ -6,12 +6,13 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/03 23:27:55 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/20 22:35:10 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/21 09:59:37 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 #define DATA ((t_file_data *)list->content)
+#define DATA_SIZE data->size
 
 static void		ft_print_part_1(t_file_data *data)
 {
@@ -28,18 +29,18 @@ static void		ft_print_part_2(t_file_data *data, t_data_max max)
 	ft_printf("%-*s ", max.max_owner_len + 1, data->owner);
 	ft_printf("%-*s ", max.max_group_len + 1, data->group);
 	if (max.max_major_len == 0 && max.max_minor_len == 0)
-		ft_printf("%*d ", max.max_size_len, data->size);
+		ft_printf("%*d ", max.max_size_len, DATA_SIZE);
 	else if (data->type == 'c' || data->type == 'b')
 	{
 		ft_printf("%*ld, ", max.max_major_len + 1, data->major);
 		ft_printf("%*ld ", max.max_minor_len, data->minor);
 	}
 	else
-		ft_printf("%*d ", max.max_minor_len + max.max_major_len + 3, data->size);
+		ft_printf("%*d ", max.max_minor_len + max.max_major_len + 3, DATA_SIZE);
 	ft_printf("%s %5s ", data->time_day, data->time_hour);
 }
 
-void		ft_ls_long(t_env env, t_list *list, int is_dir, t_data_max max)
+void			ft_ls_long(t_env env, t_list *list, int is_dir, t_data_max max)
 {
 	if (is_dir)
 	{

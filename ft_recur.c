@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/22 12:04:31 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/20 23:38:52 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/21 11:20:20 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,17 +19,14 @@ void		ft_manage_file(t_env *env, t_list *lst)
 
 	data_max = NULL;
 	list = NULL;
+	data_max = (t_data_max *)malloc(sizeof(t_data_max));
+	ft_init_data_max(data_max);
 	while (lst)
 	{
 		FULL_PATH = ft_strinit(lst->content);
 		lstat(FULL_PATH, &(env->stats));
 		ft_extract_data(env, FULL_PATH);
 		ft_lstinsert_picker(*env, &list);
-		if (!data_max)
-		{
-			data_max = (t_data_max *)malloc(sizeof(t_data_max));
-			ft_init_data_max(data_max);
-		}
 		ft_assign_data_max(env, data_max);
 		lst = lst->next;
 		ft_strdel(&FULL_PATH);
@@ -47,23 +44,14 @@ void		ft_manage_dir(t_env *env, char *directory, DIR *cur_dir, int booh)
 	data_max = NULL;
 	list = NULL;
 	lstat(directory, &(env->stats));
+	data_max = (t_data_max *)malloc(sizeof(t_data_max));
+	ft_init_data_max(data_max);
 	while ((env->dir_content = readdir(cur_dir)) != NULL)
 	{
 		FULL_PATH = ft_join(directory, env->dir_content->d_name, "/");
 		lstat(FULL_PATH, &(env->stats));
-		if (ft_donot_continue(*env, FILENAME) == 0)
-		{
-			ft_strdel(&FULL_PATH);
-			continue ;
-		}
-		ft_extract_data(env, FILENAME);
-		ft_lstinsert_picker(*env, &list);
-		if (!data_max)
-		{
-			data_max = (t_data_max *)malloc(sizeof(t_data_max));
-			ft_init_data_max(data_max);
-		}
-		ft_assign_data_max(env, data_max);
+		if (ft_donot_continue(*env, FILENAME) != 0)
+			ft_recur_helper(env, &list, data_max);
 		ft_strdel(&FULL_PATH);
 	}
 	closedir(cur_dir);
@@ -129,7 +117,7 @@ void		ft_recur_launcher(DIR *cur_dir, t_env *env, char *directory)
 
 	directories_here = NULL;
 	lstat(directory, &(env->stats));
- 	if (IS_DIRECTORY)
+	if (IS_DIRECTORY)
 	{
 		if (env->FLAGS['R'])
 			directories_here = ft_get_dir(cur_dir, env, directory);
