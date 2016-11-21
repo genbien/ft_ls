@@ -6,7 +6,7 @@
 #    By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/04/22 12:12:36 by tbouder           #+#    #+#              #
-#    Updated: 2016/11/20 19:42:13 by tbouder          ###   ########.fr        #
+#    Updated: 2016/11/21 13:39:49 by tbouder          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,13 +17,11 @@ CFLAGS		= 	-Wall -Werror -Wextra
 OPTI		=	-g -O3
 
 SRC			=	main.c \
-				ft_free.c ft_init.c\
+				ft_free.c ft_init.c \
 				ft_extract_part_one.c ft_extract_part_two.c ft_tools.c \
-				ft_ls_short.c ft_ls_one.c ft_ls_long.c\
-				ft_print.c ft_args.c \
-				ft_recur.c \
-				ft_lstinsert.c\
-				ft_btree_sort.c
+				ft_ls_short.c ft_ls_one.c ft_ls_long.c \
+				ft_print.c ft_args.c ft_recur.c ft_lstinsert.c \
+				ft_btree_sort.c ft_bonus.c
 
 
 HEAD		=	libft/libft.h

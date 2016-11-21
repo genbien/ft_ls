@@ -6,7 +6,7 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/26 15:30:10 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/21 11:21:41 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/21 13:40:10 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,6 +173,7 @@ int						ft_check_access(t_env env, char *filename);
 */
 void					ft_extract_data(t_env *env, char *filename);
 void					ft_assign_data_max(t_env *env, t_data_max *max);
+char					*ft_select_time_sort(t_env *env);
 
 /*
 ** PRINT

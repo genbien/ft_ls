@@ -6,15 +6,11 @@
 /*   By: tbouder <tbouder@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/18 16:01:18 by tbouder           #+#    #+#             */
-/*   Updated: 2016/11/21 10:09:06 by tbouder          ###   ########.fr       */
+/*   Updated: 2016/11/21 13:45:58 by tbouder          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
-#define INITBIRTH ft_strinit(ctime(&env->stats.st_birthtime))
-#define INITLAST ft_strinit(ctime(&env->stats.st_mtime))
-#define BIRTHTIME env->stats.st_birthtime
-#define LASTIME env->stats.st_mtime
 
 void		ft_extract_hard_links(t_env *env)
 {
@@ -25,8 +21,16 @@ void		ft_extract_hard_links(t_env *env)
 
 void		ft_extract_users_size(t_env *env)
 {
-	env->data->owner = ft_strinit(getpwuid(env->stats.st_uid)->pw_name);
-	env->data->group = ft_strinit(getgrgid(env->stats.st_gid)->gr_name);
+	if (env->FLAGS['n'])
+	{
+		env->data->owner = ft_itoa(env->stats.st_uid);
+		env->data->group = ft_itoa(env->stats.st_gid);
+	}
+	else
+	{
+		env->data->owner = ft_strinit(getpwuid(env->stats.st_uid)->pw_name);
+		env->data->group = ft_strinit(getgrgid(env->stats.st_gid)->gr_name);
+	}
 	env->data->size = env->stats.st_size;
 }
 
@@ -46,8 +50,7 @@ void		ft_extract_time(t_env *env)
 	char		*tmp2;
 	time_t		current_time;
 
-	date = env->FLAGS['U'] ? INITBIRTH : INITLAST;
-	env->data->timestamp = env->FLAGS['U'] ? BIRTHTIME : LASTIME;
+	date = ft_select_time_sort(env);
 	current_time = time(NULL);
 	tmp1 = ft_strsub(date, 4, 3);
 	tmp2 = ft_strsub(date, 8, 2);
